@@ -1,0 +1,404 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    /* 主色从紫色改为清爽的青蓝色调 */
+    --primary: 199 89% 48%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 199 89% 48%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 199 89% 60%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 199 89% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    /* 淡雅水墨风背景 */
+    background: 
+      linear-gradient(
+        135deg,
+        #f8f9fa 0%,
+        #fdfbfb 25%,
+        #ebedee 50%,
+        #fdfbfb 75%,
+        #f8f9fa 100%
+      );
+    background-attachment: fixed;
+    position: relative;
+  }
+  
+  /* 水墨晕染效果 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      /* 淡雅墨迹：改为青绿水色晕染 */
+      radial-gradient(ellipse 900px 500px at 30% 20%, rgba(56, 189, 248, 0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 800px 450px at 70% 60%, rgba(45, 212, 191, 0.03) 0%, transparent 65%),
+      radial-gradient(ellipse 700px 400px at 50% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 60%),
+      /* 纸纹理 */
+      repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.005) 2px, rgba(0,0,0,0.005) 4px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  main {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+/* 炫酷动画效果 */
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.shimmer {
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  background-size: 1000px 100%;
+}
+
+/* 超强毛玻璃效果 */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(40px) saturate(200%) brightness(110%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(110%);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    0 8px 32px 0 rgba(56, 189, 248, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+    0 1px 0 0 rgba(255, 255, 255, 0.9) inset;
+}
+
+.glass:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(45, 212, 191, 0.5);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 16px 48px 0 rgba(56, 189, 248, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+    0 1px 0 0 rgba(255, 255, 255, 1) inset;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(50px) saturate(200%) brightness(115%);
+  -webkit-backdrop-filter: blur(50px) saturate(200%) brightness(115%);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 12px 40px 0 rgba(56, 189, 248, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-8px);
+  box-shadow: 
+    0 20px 60px 0 rgba(56, 189, 248, 0.25),
+    0 0 0 2px rgba(45, 212, 191, 0.3) inset;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 渐变文字 */
+.gradient-text {
+  background: linear-gradient(135deg, #4facfe 0%, #43e97b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 发光效果 */
+.glow {
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 30px rgba(56, 189, 248, 0.8);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* 首页标题区文字效果 */
+.hero-subtitle {
+  text-shadow: 0 4px 18px rgba(15, 23, 42, 0.95);
+}
+
+.hero-description {
+  text-shadow: 0 3px 14px rgba(15, 23, 42, 0.9);
+}
+
+@keyframes caret-blink {
+  0%, 49% {
+    opacity: 1;
+  }
+  50%, 100% {
+    opacity: 0;
+  }
+}
+
+.typewriter-caret {
+  display: inline-block;
+  width: 0.08em;
+  margin-left: 0.15em;
+  border-right: 2px solid rgba(255, 255, 255, 0.95);
+  animation: caret-blink 1s steps(1, end) infinite;
+}
+
+/* 首页专用：风景背景 + 毛玻璃主题容器 */
+.home-hero-bg {
+  min-height: calc(100vh - 4rem);
+  padding: 4rem 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: background-image 1s ease-in-out;
+}
+
+/* 多张公路 / 阳光背景，用于轮播 */
+.home-hero-bg-0 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-1 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-2 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-3 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-4 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-5 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-6 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-7 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-8 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-9 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-10 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-bg-11 {
+  background-image:
+    linear-gradient(
+      to bottom,
+      rgba(15, 23, 42, 0.6),
+      rgba(15, 23, 42, 0.2),
+      rgba(248, 250, 252, 0.18)
+    ),
+    url('https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=1920');
+}
+
+.home-hero-shell {
+  border-radius: 1.75rem;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  box-shadow:
+    0 24px 60px rgba(15, 23, 42, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 768px) {
+  .home-hero-bg {
+    padding: 1.5rem 0 2.5rem;
+    background-attachment: scroll;
+  }
+
+  .home-hero-shell {
+    border-radius: 1.25rem;
+    box-shadow:
+      0 12px 32px rgba(15, 23, 42, 0.25),
+      0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  }
+}
+
