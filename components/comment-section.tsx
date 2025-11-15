@@ -120,7 +120,8 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
         }
       }
       
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('comments')
         .insert({
           work_id: workId,
@@ -166,9 +167,9 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
                   className="w-10 h-10 rounded-full"
                 />
               ) : (
-                <div className={`${getAvatarColor(currentUser.name || currentUser.username)} rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0`}>
+                <div className={`${getAvatarColor(currentUser.name || currentUser.username || 'User')} rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0`}>
                   <span className="text-white font-semibold">
-                    {getInitials(currentUser.name || currentUser.username)}
+                    {getInitials(currentUser.name || currentUser.username || 'U')}
                   </span>
                 </div>
               )}

@@ -60,10 +60,10 @@ export function LoginButton() {
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>我的账户</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem disabled>
+          <div className="px-2 py-1.5 text-sm text-muted-foreground flex items-center">
             <User className="mr-2 h-4 w-4" />
             {user.username}
-          </DropdownMenuItem>
+          </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout} className="text-red-600">
             <LogOut className="mr-2 h-4 w-4" />

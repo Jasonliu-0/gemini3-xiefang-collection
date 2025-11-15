@@ -33,7 +33,8 @@ export function LikeButton({ workId, initialLikes }: LikeButtonProps) {
       setTimeout(() => setIsAnimating(false), 600)
 
       // 更新数据库
-      const { error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
         .from('works')
         .update({ likes: likes + 1 })
         .eq('id', workId)

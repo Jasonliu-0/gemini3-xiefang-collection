@@ -133,7 +133,8 @@ export function UploadForm() {
       }
 
       // 插入数据库
-      const { data, error } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
         .from('works')
         .insert({
           title: formData.title,
@@ -164,21 +165,23 @@ export function UploadForm() {
       // 详细错误信息
       let errorMessage = '上传失败，请重试'
       
+      if (error && typeof error === 'object') {
+        if ('message' in error) {
+          errorMessage = `上传失败: ${(error as { message: string }).message}`
+        }
+        if ('error' in error && (error as { error?: { message?: string } }).error?.message) {
+          errorMessage = `上传失败: ${(error as { error: { message: string } }).error.message}`
+        }
+        if ('statusCode' in error && (error as { statusCode?: string }).statusCode === '413') {
+          errorMessage = '文件太大，请减小文件大小'
+        }
+      }
+      
       if (error && typeof error === 'object' && 'message' in error) {
-        errorMessage = `上传失败: ${(error as { message: string }).message}`
-      }
-      
-      if (error?.error?.message) {
-        errorMessage = `上传失败: ${error.error.message}`
-      }
-      
-      // Supabase Storage 错误
-      if (error?.statusCode === '413') {
-        errorMessage = '文件太大，请减小文件大小'
-      }
-      
-      if (error?.message?.includes('storage')) {
-        errorMessage += '\n\n可能原因：\n1. Supabase Storage 存储桶未创建\n2. 存储桶权限设置不正确\n3. 网络连接问题'
+        const message = (error as { message: string }).message
+        if (message.includes('storage')) {
+          errorMessage += '\n\n可能原因：\n1. Supabase Storage 存储桶未创建\n2. 存储桶权限设置不正确\n3. 网络连接问题'
+        }
       }
       
       alert(errorMessage)

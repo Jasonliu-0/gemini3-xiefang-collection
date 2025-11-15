@@ -8,10 +8,11 @@ import { SourceCodeViewer } from '@/components/source-code-viewer'
 import { LikeButton } from '@/components/like-button'
 import { Eye, Heart, Calendar, User } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/utils'
+import { Work } from '@/types/database'
 
 export const revalidate = 0
 
-async function getWork(id: string) {
+async function getWork(id: string): Promise<Work | null> {
   const { data, error } = await supabase
     .from('works')
     .select('*')
@@ -22,13 +23,18 @@ async function getWork(id: string) {
     return null
   }
 
+  // 类型断言
+  const work = data as Work
+
   // 增加浏览量
-  await supabase
+  const currentViews = work.views || 0
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (supabase as any)
     .from('works')
-    .update({ views: data.views + 1 })
+    .update({ views: currentViews + 1 })
     .eq('id', id)
 
-  return data
+  return work
 }
 
 async function getComments(workId: string) {
@@ -129,7 +135,6 @@ export default async function WorkDetailPage({
         sourceCodeUrl={work.source_code_url}
         sourceRepoUrl={work.source_repo_url}
         workUrl={work.url}
-        workId={work.id}
       />
 
       {/* 点赞按钮 */}

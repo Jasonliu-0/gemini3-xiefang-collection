@@ -127,17 +127,20 @@ export function SourceCodeViewer({
 
     const url = window.location.href
     const title = document.title || 'Gemini 3.0 作品'
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const nav = navigator as any
 
     try {
-      if ('share' in navigator) {
+      if ('share' in nav) {
         // 优先使用原生分享（可分享到系统支持的平台）
-        await navigator.share({
+        await nav.share({
           title,
           url,
         })
-      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+      } else if (nav.clipboard && nav.clipboard.writeText) {
         // 退化方案：复制链接
-        await navigator.clipboard.writeText(url)
+        await nav.clipboard.writeText(url)
         setShareCopied(true)
         setTimeout(() => setShareCopied(false), 2000)
       } else {
@@ -148,9 +151,11 @@ export function SourceCodeViewer({
       console.error('Failed to share:', error)
       // 若原生分享失败，尝试复制链接
       try {
-        await navigator.clipboard.writeText(url)
-        setShareCopied(true)
-        setTimeout(() => setShareCopied(false), 2000)
+        if (nav.clipboard) {
+          await nav.clipboard.writeText(url)
+          setShareCopied(true)
+          setTimeout(() => setShareCopied(false), 2000)
+        }
       } catch {
         window.prompt('请复制下面的链接进行分享：', url)
       }

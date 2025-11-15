@@ -41,9 +41,9 @@ export default async function RootLayout({
 
   const totalWorks = worksData?.length ?? 0
   const totalViews =
-    worksData?.reduce((sum, w) => sum + (w.views ?? 0), 0) ?? 0
+    worksData?.reduce((sum, w) => sum + ((w as { views?: number }).views ?? 0), 0) ?? 0
   const totalLikes =
-    worksData?.reduce((sum, w) => sum + (w.likes ?? 0), 0) ?? 0
+    worksData?.reduce((sum, w) => sum + ((w as { likes?: number }).likes ?? 0), 0) ?? 0
 
   return (
     <html lang="zh-CN">

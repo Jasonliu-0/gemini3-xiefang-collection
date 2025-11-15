@@ -33,7 +33,7 @@ export function TagSelector({ selectedTags, onTagsChange }: TagSelectorProps) {
 
       // 收集所有唯一的标签
       const tagSet = new Set<string>()
-      data?.forEach(work => {
+      data?.forEach((work: { tags?: string[] }) => {
         if (work.tags && Array.isArray(work.tags)) {
           work.tags.forEach(tag => tagSet.add(tag))
         }
