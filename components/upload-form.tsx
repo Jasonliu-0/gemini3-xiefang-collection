@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { TagSelector } from '@/components/tag-selector'
 import { supabase } from '@/lib/supabase'
-import { Upload, Link as LinkIcon, Code } from 'lucide-react'
+import { Upload, Code } from 'lucide-react'
 
 export function UploadForm() {
   const router = useRouter()
@@ -41,7 +41,7 @@ export function UploadForm() {
     const fileExt = file.name.split('.').pop()
     const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
     
-    const { data, error } = await supabase.storage
+    const { error } = await supabase.storage
       .from(bucket)
       .upload(fileName, file)
 
@@ -158,14 +158,14 @@ export function UploadForm() {
       alert('上传成功！')
       // 使用正确的 UUID 跳转
       router.push(`/works/${data.id}`)
-    } catch (error: any) {
+    } catch (error) {
       console.error('上传失败:', error)
       
       // 详细错误信息
       let errorMessage = '上传失败，请重试'
       
-      if (error?.message) {
-        errorMessage = `上传失败: ${error.message}`
+      if (error && typeof error === 'object' && 'message' in error) {
+        errorMessage = `上传失败: ${(error as { message: string }).message}`
       }
       
       if (error?.error?.message) {

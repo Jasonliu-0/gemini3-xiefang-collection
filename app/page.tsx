@@ -216,7 +216,7 @@ export default function HomePage() {
             <span className="text-sm font-medium text-blue-900">当前筛选：</span>
             {searchQuery && (
               <Badge className="gap-2 bg-blue-600">
-                搜索: "{searchQuery}"
+                搜索: &quot;{searchQuery}&quot;
                 <button
                   onClick={() => setSearchQuery('')}
                   className="hover:text-white/80"

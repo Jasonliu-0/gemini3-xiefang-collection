@@ -10,7 +10,7 @@ const DropdownMenu = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = React.useState(false)
 
   React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = () => {
       setOpen(false)
     }
 
@@ -68,7 +68,7 @@ const DropdownMenuContent = React.forwardRef<
       )}
       onClick={(e) => {
         e.stopPropagation()
-        onClick?.(e)
+        if (onClick) onClick(e)
       }}
       {...props}
     >

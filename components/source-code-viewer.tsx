@@ -10,14 +10,12 @@ interface SourceCodeViewerProps {
   // 新增：源码仓库 / 外部链接
   sourceRepoUrl?: string | null
   workUrl?: string | null
-  workId: string
 }
 
 export function SourceCodeViewer({
   sourceCodeUrl,
   sourceRepoUrl,
   workUrl,
-  workId,
 }: SourceCodeViewerProps) {
   const [showPreview, setShowPreview] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -131,10 +129,9 @@ export function SourceCodeViewer({
     const title = document.title || 'Gemini 3.0 作品'
 
     try {
-      const nav: any = navigator
-      if (nav && nav.share) {
+      if ('share' in navigator) {
         // 优先使用原生分享（可分享到系统支持的平台）
-        await nav.share({
+        await navigator.share({
           title,
           url,
         })
@@ -167,7 +164,7 @@ export function SourceCodeViewer({
         const base64Data = cleanSourceUrl.split(',')[1]
         const decodedCode = decodeURIComponent(escape(atob(base64Data)))
         return decodedCode
-      } catch (error) {
+      } catch {
         return '无法解析代码内容'
       }
     }

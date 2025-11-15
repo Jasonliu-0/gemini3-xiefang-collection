@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Rating } from '@/components/rating'
@@ -30,7 +29,7 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
   const [content, setContent] = useState('')
   const [rating, setRating] = useState(5)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [currentUser, setCurrentUser] = useState<{ name?: string; username?: string; avatar_url?: string; provider?: string } | null>(null)
   const contentRef = useRef<HTMLTextAreaElement | null>(null)
   
   useEffect(() => {
