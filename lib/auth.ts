@@ -1,13 +1,17 @@
 // Linux DO OAuth2 配置
+// 支持通过环境变量配置端点，优先使用 .do 域名（原始域名）
+// 如果无法访问，可以通过环境变量切换到备用域名
+const LINUX_DO_BASE_URL = process.env.NEXT_PUBLIC_LINUX_DO_BASE_URL || 'https://connect.linux.do'
+
 export const OAUTH_CONFIG = {
   CLIENT_ID: process.env.NEXT_PUBLIC_LINUX_DO_CLIENT_ID || '',
   CLIENT_SECRET: process.env.LINUX_DO_CLIENT_SECRET || '',
   REDIRECT_URI:
     process.env.NEXT_PUBLIC_REDIRECT_URI ||
     'http://localhost:3000/api/auth/callback',
-  AUTH_URL: 'https://connect.linux.do/oauth2/authorize',
-  TOKEN_URL: 'https://connect.linux.do/oauth2/token',
-  USER_INFO_URL: 'https://connect.linux.do/oauth2/userinfo',
+  AUTH_URL: `${LINUX_DO_BASE_URL}/oauth2/authorize`,
+  TOKEN_URL: `${LINUX_DO_BASE_URL}/oauth2/token`,
+  USER_INFO_URL: `${LINUX_DO_BASE_URL}/api/user`,
 }
 
 // GitHub OAuth2 配置

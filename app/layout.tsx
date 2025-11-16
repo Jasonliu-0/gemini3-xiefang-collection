@@ -56,54 +56,54 @@ export default async function RootLayout({
           {children}
         </main>
         <BackToTopButton />
-        <footer className="bg-white/40 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-t border-white/40 py-8 mt-10 shadow-lg">
-          <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+        <footer className="bg-white/40 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-t border-white/40 py-6 md:py-8 mt-8 md:mt-10 shadow-lg">
+          <div className="container px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
               {/* 左侧：创作数据概览 */}
               <div className="flex justify-center md:justify-start">
-                <div className="w-full max-w-sm rounded-2xl bg-white/80 border border-sky-100 shadow-md px-6 py-5 text-left space-y-4">
+                <div className="w-full max-w-sm rounded-2xl bg-white/80 border border-sky-100 shadow-md px-5 md:px-6 py-4 md:py-5 text-left space-y-3 md:space-y-4">
                   <p className="text-xs font-semibold tracking-[0.2em] text-sky-600 uppercase">
                     数据一瞥
                   </p>
-                  <p className="text-base text-gray-700 font-serif">
+                  <p className="text-sm md:text-base text-gray-700 font-serif">
                     用数字记录每一次灵感的闪光。
                   </p>
-                  <div className="grid grid-cols-3 gap-4 text-sm font-serif">
+                  <div className="grid grid-cols-3 gap-3 md:gap-4 text-sm font-serif">
                     <div>
-                      <p className="text-lg md:text-xl font-bold text-gray-900">
+                      <p className="text-base md:text-xl font-bold text-gray-900">
                         {totalWorks}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">作品收录</p>
+                      <p className="text-[10px] md:text-xs text-gray-500 mt-1">作品收录</p>
                     </div>
                     <div>
-                      <p className="text-lg md:text-xl font-bold text-gray-900">
+                      <p className="text-base md:text-xl font-bold text-gray-900">
                         {totalViews.toLocaleString('zh-CN')}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">累计浏览</p>
+                      <p className="text-[10px] md:text-xs text-gray-500 mt-1">累计浏览</p>
                     </div>
                     <div>
-                      <p className="text-lg md:text-xl font-bold text-gray-900">
+                      <p className="text-base md:text-xl font-bold text-gray-900">
                         {totalLikes.toLocaleString('zh-CN')}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">获得点赞</p>
+                      <p className="text-[10px] md:text-xs text-gray-500 mt-1">获得点赞</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* 中间：品牌介绍和导航 */}
-              <div className="flex flex-col items-center justify-center gap-3 text-center">
-                <div className="flex items-center gap-3">
-                  <Sparkles className="h-6 w-6 text-sky-500" />
-                  <span className="text-2xl font-bold text-gray-900 tracking-wider font-calligraphy">
+              <div className="flex flex-col items-center justify-center gap-2 md:gap-3 text-center">
+                <div className="flex items-center gap-2 md:gap-3">
+                  <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-sky-500" />
+                  <span className="text-xl md:text-2xl font-bold text-gray-900 tracking-wider font-calligraphy">
                     撷芳集
                   </span>
                 </div>
-                <p className="text-base text-gray-600 max-w-md font-serif leading-relaxed">
+                <p className="text-sm md:text-base text-gray-600 max-w-md font-serif leading-relaxed px-4">
                   撷芳拾翠，集珍纳华<br />
                   珍藏 Gemini 3.0 创作的优秀作品
                 </p>
-                <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500 font-serif">
+                <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 text-xs md:text-sm text-gray-500 font-serif">
                   <a
                     href="https://github.com/Jasonliu-0/gemini3-xiefang-collection"
                     target="_blank"
@@ -112,7 +112,7 @@ export default async function RootLayout({
                   >
                     GitHub
                   </a>
-                  <span className="hidden md:inline">·</span>
+                  <span>·</span>
                   <a
                     href="https://github.com/Jasonliu-0/gemini3-xiefang-collection#readme"
                     target="_blank"
@@ -121,7 +121,7 @@ export default async function RootLayout({
                   >
                     关于
                   </a>
-                  <span className="hidden md:inline">·</span>
+                  <span>·</span>
                   <a
                     href="https://github.com/Jasonliu-0/gemini3-xiefang-collection/issues"
                     target="_blank"
@@ -135,28 +135,28 @@ export default async function RootLayout({
 
               {/* 右侧：行动召唤 + 少量热门标签 */}
               <div className="flex justify-center md:justify-end">
-                <div className="w-full max-w-sm rounded-2xl bg-white/80 border border-emerald-100 shadow-md px-6 py-5 text-left space-y-4">
+                <div className="w-full max-w-sm rounded-2xl bg-white/80 border border-emerald-100 shadow-md px-5 md:px-6 py-4 md:py-5 text-left space-y-3 md:space-y-4">
                   <p className="text-xs font-semibold tracking-[0.2em] text-emerald-600 uppercase">
                     加入创作
                   </p>
-                  <p className="text-base text-gray-700 font-serif">
+                  <p className="text-sm md:text-base text-gray-700 font-serif">
                     把你的 Gemini 3.0 佳作，也收入这本「撷芳集」。
                   </p>
-                  <div className="flex flex-wrap items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2 md:gap-3">
                     <Link
                       href="/upload"
-                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 px-5 py-2 text-sm font-medium text-white shadow-md hover:shadow-lg hover:from-sky-600 hover:to-emerald-600 transition-all"
+                      className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-sky-500 to-emerald-500 px-4 md:px-5 py-1.5 md:py-2 text-xs md:text-sm font-medium text-white shadow-md hover:shadow-lg hover:from-sky-600 hover:to-emerald-600 transition-all"
                     >
                       上传作品
                     </Link>
-                    <div className="flex flex-wrap gap-2 text-xs font-serif text-gray-600">
-                      <span className="px-3 py-1 rounded-full bg-sky-50 border border-sky-100">
+                    <div className="flex flex-wrap gap-2 text-[10px] md:text-xs font-serif text-gray-600">
+                      <span className="px-2 md:px-3 py-1 rounded-full bg-sky-50 border border-sky-100">
                         插画灵感
                       </span>
-                      <span className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100">
+                      <span className="px-2 md:px-3 py-1 rounded-full bg-emerald-50 border border-emerald-100">
                         3D 场景
                       </span>
-                      <span className="px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100">
+                      <span className="px-2 md:px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100">
                         网页设计
                       </span>
                     </div>
@@ -165,7 +165,7 @@ export default async function RootLayout({
               </div>
             </div>
 
-            <div className="mt-6 text-center text-xs text-gray-500 font-serif">
+            <div className="mt-5 md:mt-6 text-center text-[10px] md:text-xs text-gray-500 font-serif">
               Made with ❤️ by Jasonliu-0 · MIT License
             </div>
           </div>

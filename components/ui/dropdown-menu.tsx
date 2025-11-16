@@ -28,20 +28,33 @@ const DropdownMenu = ({ children }: { children: React.ReactNode }) => {
 }
 
 const DropdownMenuTrigger = React.forwardRef<
-  HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }
->(({ children, className, onClick, ...props }, ref) => {
+  HTMLElement,
+  React.HTMLAttributes<HTMLElement> & { asChild?: boolean }
+>(({ children, className, onClick, asChild = false, ...props }, ref) => {
   const { open, setOpen } = React.useContext(DropdownMenuContext)
   
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setOpen(!open)
+    onClick?.(e as any)
+  }
+
+  // 如果使用 asChild，则克隆子元素并添加必要的 props
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children as React.ReactElement<any>, {
+      ref,
+      onClick: handleClick,
+      className: cn(children.props.className, className),
+      ...props,
+    })
+  }
+  
+  // 否则渲染一个 button 包裹子元素
   return (
     <button
-      ref={ref}
+      ref={ref as React.Ref<HTMLButtonElement>}
       className={cn("cursor-pointer", className)}
-      onClick={(e) => {
-        e.stopPropagation()
-        setOpen(!open)
-        onClick?.(e)
-      }}
+      onClick={handleClick}
       {...props}
     >
       {children}

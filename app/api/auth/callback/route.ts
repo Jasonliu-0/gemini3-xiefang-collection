@@ -10,11 +10,19 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // 1. 获取访问令牌
+    console.log('开始 OAuth 认证流程...')
+    console.log('Token URL:', OAUTH_CONFIG.TOKEN_URL)
+    console.log('Redirect URI:', OAUTH_CONFIG.REDIRECT_URI)
+    
+    // 1. 获取访问令牌（增加超时时间）
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30秒超时
+    
     const tokenResponse = await fetch(OAUTH_CONFIG.TOKEN_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
       },
       body: new URLSearchParams({
         client_id: OAUTH_CONFIG.CLIENT_ID,
@@ -23,9 +31,21 @@ export async function GET(request: NextRequest) {
         redirect_uri: OAUTH_CONFIG.REDIRECT_URI,
         grant_type: 'authorization_code',
       }),
+      signal: controller.signal,
     })
+    
+    clearTimeout(timeoutId)
 
+    console.log('Token Response Status:', tokenResponse.status)
+    
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text()
+      console.error('Token Response Error:', errorText)
+      return NextResponse.redirect(new URL('/?error=token_request_failed', request.url))
+    }
+    
     const tokenData = await tokenResponse.json()
+    console.log('Token Data received:', !!tokenData.access_token)
 
     if (!tokenData.access_token) {
       console.error('Token error:', tokenData)
@@ -36,12 +56,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL(`/?error=${errorMsg}`, request.url))
     }
 
-    // 2. 获取用户信息
+    // 2. 获取用户信息（增加超时时间）
+    const userController = new AbortController()
+    const userTimeoutId = setTimeout(() => userController.abort(), 30000)
+    
     const userResponse = await fetch(OAUTH_CONFIG.USER_INFO_URL, {
       headers: {
         Authorization: `Bearer ${tokenData.access_token}`,
+        'Accept': 'application/json',
       },
+      signal: userController.signal,
     })
+    
+    clearTimeout(userTimeoutId)
+    console.log('User Response Status:', userResponse.status)
 
     const userData = await userResponse.json()
 
@@ -81,7 +109,22 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('OAuth error:', error)
-    return NextResponse.redirect(new URL('/?error=auth_failed', request.url))
+    
+    // 判断错误类型，返回更详细的错误信息
+    let errorMsg = 'auth_failed'
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        errorMsg = 'connection_timeout'
+        console.error('连接超时: 无法连接到 Linux.do 服务器')
+      } else if (error.message.includes('fetch failed')) {
+        errorMsg = 'network_error'
+        console.error('网络错误: 请检查网络连接和防火墙设置')
+      } else {
+        console.error('错误详情:', error.message)
+      }
+    }
+    
+    return NextResponse.redirect(new URL(`/?error=${errorMsg}`, request.url))
   }
 }
 

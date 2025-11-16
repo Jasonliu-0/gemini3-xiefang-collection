@@ -54,6 +54,11 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    overflow-x: hidden;
+  }
+  
   body {
     @apply bg-background text-foreground;
     /* 淡雅水墨风背景 */
@@ -68,6 +73,8 @@
       );
     background-attachment: fixed;
     position: relative;
+    overflow-x: hidden;
+    width: 100%;
   }
   
   /* 水墨晕染效果 */

@@ -48,13 +48,13 @@ export function LoginButton() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" size="sm" className="gap-1 md:gap-2 px-2 md:px-4">
             {user.avatar_url ? (
-              <img src={user.avatar_url} alt={user.name} className="w-6 h-6 rounded-full" />
+              <img src={user.avatar_url} alt={user.name} className="w-5 h-5 md:w-6 md:h-6 rounded-full" />
             ) : (
               <User className="h-4 w-4" />
             )}
-            <span className="hidden md:inline">{user.name || user.username}</span>
+            <span className="hidden md:inline max-w-[100px] truncate">{user.name || user.username}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
@@ -77,9 +77,9 @@ export function LoginButton() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" size="sm" className="gap-1 md:gap-2 px-2 md:px-4">
           <LogIn className="h-4 w-4" />
-          登录
+          <span className="hidden sm:inline">登录</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48">
@@ -87,12 +87,15 @@ export function LoginButton() {
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => handleLogin('github')}>
           <Github className="mr-2 h-4 w-4" />
-          使用 GitHub 登录
+          使用 GitHub 登录 ⭐
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleLogin('linuxdo')}>
           <Terminal className="mr-2 h-4 w-4" />
           使用 Linux DO 登录
         </DropdownMenuItem>
+        <div className="px-2 py-1.5 text-xs text-muted-foreground">
+          推荐使用 GitHub 登录
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )
