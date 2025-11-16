@@ -1,0 +1,17 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# 禁用对公开环境变量的 secrets 扫描
+[build.environment]
+  # Next.js 公开环境变量不应被视为密钥
+  NEXT_PUBLIC_TELEMETRY_DISABLED = "1"
+
+# 告诉 Netlify 这些是安全的公开变量
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# 忽略 NEXT_PUBLIC_* 前缀的变量扫描
+[context.production]
+  environment = { NODE_VERSION = "18" }
+
