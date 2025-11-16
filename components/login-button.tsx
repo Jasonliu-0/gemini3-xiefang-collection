@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button'
 import { LogIn, LogOut, User, Github, Terminal } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import {
   getAuthUrl,
   isAuthenticated,
@@ -50,7 +51,14 @@ export function LoginButton() {
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm" className="gap-1 md:gap-2 px-2 md:px-4">
             {user.avatar_url ? (
-              <img src={user.avatar_url} alt={user.name} className="w-5 h-5 md:w-6 md:h-6 rounded-full" />
+              <Image
+                src={user.avatar_url}
+                alt={user.name || user.username || '用户头像'}
+                width={24}
+                height={24}
+                unoptimized
+                className="w-5 h-5 md:w-6 md:h-6 rounded-full object-cover"
+              />
             ) : (
               <User className="h-4 w-4" />
             )}

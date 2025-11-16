@@ -10,6 +10,7 @@ import { Comment } from '@/types/database'
 import { formatDate } from '@/lib/utils'
 import { supabase } from '@/lib/supabase'
 import { User } from 'lucide-react'
+import Image from 'next/image'
 
 const EMOJI_PICKER = ['😀', '😂', '🥰', '👍', '🎉', '✨', '🔥', '🤔', '😢', '❤️']
 
@@ -161,10 +162,13 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
           <>
             <div className="mb-4 flex items-center gap-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
               {currentUser.avatar_url ? (
-                <img 
+                <Image 
                   src={currentUser.avatar_url} 
-                  alt={currentUser.name} 
-                  className="w-10 h-10 rounded-full"
+                  alt={currentUser.name || currentUser.username || '用户头像'} 
+                  width={40}
+                  height={40}
+                  unoptimized
+                  className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
                 <div className={`${getAvatarColor(currentUser.name || currentUser.username || 'User')} rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0`}>
@@ -284,10 +288,13 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
                     <div className="flex items-start gap-4">
                       {/* 用户头像 */}
                       {avatarUrl ? (
-                        <img 
+                        <Image 
                           src={avatarUrl} 
                           alt={displayName} 
-                          className="w-10 h-10 rounded-full flex-shrink-0"
+                          width={40}
+                          height={40}
+                          unoptimized
+                          className="w-10 h-10 rounded-full flex-shrink-0 object-cover"
                         />
                       ) : (
                         <div className={`${getAvatarColor(displayName)} rounded-full w-10 h-10 flex items-center justify-center flex-shrink-0`}>

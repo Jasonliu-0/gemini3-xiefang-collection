@@ -27,26 +27,31 @@ const DropdownMenu = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-const DropdownMenuTrigger = React.forwardRef<
-  HTMLElement,
-  React.HTMLAttributes<HTMLElement> & { asChild?: boolean }
->(({ children, className, onClick, asChild = false, ...props }, ref) => {
+type DropdownTriggerProps = React.HTMLAttributes<HTMLElement> & { asChild?: boolean }
+type TriggerElement = React.ReactElement<React.HTMLAttributes<HTMLElement>>
+
+const DropdownMenuTrigger = React.forwardRef<HTMLElement, DropdownTriggerProps>(
+({ children, className, onClick, asChild = false, ...props }, ref) => {
   const { open, setOpen } = React.useContext(DropdownMenuContext)
   
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation()
     setOpen(!open)
-    onClick?.(e as any)
+    onClick?.(e)
   }
 
   // 如果使用 asChild，则克隆子元素并添加必要的 props
   if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children as React.ReactElement<any>, {
-      ref,
-      onClick: handleClick,
-      className: cn(children.props.className, className),
+    const child = children as TriggerElement
+    const clonedElement = React.cloneElement(child, {
+      onClick: (event: React.MouseEvent<HTMLElement>) => {
+        handleClick(event)
+        child.props.onClick?.(event)
+      },
+      className: cn(child.props.className, className),
       ...props,
-    })
+    } as any) // eslint-disable-line @typescript-eslint/no-explicit-any
+    return clonedElement
   }
   
   // 否则渲染一个 button 包裹子元素
