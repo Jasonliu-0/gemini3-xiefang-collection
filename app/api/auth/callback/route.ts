@@ -29,7 +29,11 @@ export async function GET(request: NextRequest) {
 
     if (!tokenData.access_token) {
       console.error('Token error:', tokenData)
-      return NextResponse.redirect(new URL('/?error=token_failed', request.url))
+      console.error('Client ID:', OAUTH_CONFIG.CLIENT_ID)
+      console.error('Redirect URI:', OAUTH_CONFIG.REDIRECT_URI)
+      // 返回详细错误信息
+      const errorMsg = tokenData.error_description || tokenData.error || 'token_failed'
+      return NextResponse.redirect(new URL(`/?error=${errorMsg}`, request.url))
     }
 
     // 2. 获取用户信息
