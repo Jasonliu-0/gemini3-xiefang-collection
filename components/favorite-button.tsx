@@ -32,10 +32,12 @@ export function FavoriteButton({ workId }: FavoriteButtonProps) {
         .select('id')
         .eq('work_id', workId)
         .eq('user_name', username)
-        .single()
+        .maybeSingle()
 
+      // 如果有数据且没有错误，说明已收藏
       setIsFavorited(!!data && !error)
-    } catch {
+    } catch (error) {
+      console.error('检查收藏状态失败:', error)
       setIsFavorited(false)
     }
   }
