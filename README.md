@@ -353,6 +353,9 @@ ALTER TABLE favorites DISABLE ROW LEVEL SECURITY;
 - 支持深色模式
 
 #### 管理员后台
+- **配置方式**：
+  - 推荐：在 `.env.local` 中设置 `NEXT_PUBLIC_ADMIN_USERS=username1,username2`
+  - 备用：修改 `lib/admin.ts` 文件
 - 管理员登录后，Header 显示 🛡️ "管理后台"按钮
 - 访问 `/admin` 页面管理所有作品
 - 功能包括：
@@ -558,16 +561,27 @@ ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
 <details>
 <summary><b>Q: 如何成为管理员？</b></summary>
 
-**A:** 在 `lib/admin.ts` 文件中的 `ADMIN_USERS` 数组添加你的 GitHub 或 Linux.do 用户名：
+**A:** 支持两种配置方式：
+
+**方式一：环境变量（推荐）**
+在 `.env.local` 中添加：
+```bash
+NEXT_PUBLIC_ADMIN_USERS=your-github-username,your-linuxdo-username
+```
+多个管理员用逗号分隔。
+
+**方式二：代码配置**
+在 `lib/admin.ts` 文件中的 `CODE_ADMIN_USERS` 数组添加：
 ```typescript
-export const ADMIN_USERS = [
+const CODE_ADMIN_USERS: string[] = [
   'your-github-username',
   'your-linuxdo-username',
 ]
 ```
+
 重新部署后即可看到管理后台入口。
 
-**注意**：为了安全，建议通过环境变量配置管理员列表，而不是硬编码在代码中。
+**推荐**：生产环境使用环境变量方式，更安全，不会暴露在代码库中。
 </details>
 
 <details>
