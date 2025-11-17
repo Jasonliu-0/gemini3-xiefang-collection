@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { CommentSection } from '@/components/comment-section'
 import { SourceCodeViewer } from '@/components/source-code-viewer'
 import { LikeButton } from '@/components/like-button'
+import { FavoriteButton } from '@/components/favorite-button'
 import { Eye, Heart, Calendar, User } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/utils'
 import { Work } from '@/types/database'
@@ -137,9 +138,10 @@ export default async function WorkDetailPage({
         workUrl={work.url}
       />
 
-      {/* 点赞按钮 */}
-      <div className="mb-8">
+      {/* 互动按钮：点赞和收藏 */}
+      <div className="mb-8 flex gap-3">
         <LikeButton workId={work.id} initialLikes={work.likes} />
+        <FavoriteButton workId={work.id} />
       </div>
 
       {/* 评论区 */}
