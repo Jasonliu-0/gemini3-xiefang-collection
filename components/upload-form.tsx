@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -10,11 +10,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { TagSelector } from '@/components/tag-selector'
 import { supabase } from '@/lib/supabase'
-import { Upload, Code } from 'lucide-react'
+import { Upload, Code, Save } from 'lucide-react'
 
 export function UploadForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const editId = searchParams.get('edit')
+  const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -27,6 +31,59 @@ export function UploadForm() {
   const [sourceCodeFile, setSourceCodeFile] = useState<File | null>(null)
   const [sourceCodeText, setSourceCodeText] = useState('')
   const [sourceCodeType, setSourceCodeType] = useState<'file' | 'code'>('file')
+
+  // 加载编辑数据
+  useEffect(() => {
+    if (editId) {
+      loadWorkData(editId)
+    }
+  }, [editId])
+
+  const loadWorkData = async (workId: string) => {
+    setLoading(true)
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data, error } = await (supabase as any)
+        .from('works')
+        .select('*')
+        .eq('id', workId)
+        .single()
+
+      if (error) throw error
+
+      if (data) {
+        setIsEditing(true)
+        setFormData({
+          title: data.title || '',
+          description: data.description || '',
+          url: data.url || '',
+          sourceCodeUrl: data.source_code_url || '',
+          author: data.author || '',
+        })
+        setSelectedTags(data.tags || [])
+        
+        // 如果有 HTML 代码，提取并显示
+        if (data.source_code_url && data.source_code_url.startsWith('data:text/html')) {
+          try {
+            const cleanUrl = data.source_code_url.includes('[CODE-')
+              ? data.source_code_url.substring(data.source_code_url.indexOf('data:'))
+              : data.source_code_url
+            const base64Data = cleanUrl.split(',')[1]
+            const decodedCode = decodeURIComponent(escape(atob(base64Data)))
+            setSourceCodeText(decodedCode)
+            setSourceCodeType('code')
+          } catch (err) {
+            console.error('解码失败:', err)
+          }
+        }
+      }
+    } catch (error) {
+      console.error('加载作品数据失败:', error)
+      alert('加载作品数据失败')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -132,33 +189,54 @@ export function UploadForm() {
         sourceCodeUrl = formData.sourceCodeUrl
       }
 
-      // 插入数据库
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const { data, error } = await (supabase as any)
-        .from('works')
-        .insert({
-          title: formData.title,
-          description: formData.description || null,
-          url: formData.url || null,
-          source_code_url: sourceCodeUrl || null,
-          source_repo_url: sourceRepoUrl,
-          thumbnail: thumbnailUrl,
-          tags: selectedTags.length > 0 ? selectedTags : null,
-          author: formData.author || null,
-        })
-        .select()
-        .single()
-
-      if (error) throw error
-
-      // 确保 data 对象存在且有 id 字段
-      if (!data || !data.id) {
-        throw new Error('上传成功但未返回作品ID')
+      // 准备作品数据
+      const workData = {
+        title: formData.title,
+        description: formData.description || null,
+        url: formData.url || null,
+        source_code_url: sourceCodeUrl || formData.sourceCodeUrl || null,
+        source_repo_url: sourceRepoUrl,
+        thumbnail: thumbnailUrl || null,
+        tags: selectedTags.length > 0 ? selectedTags : null,
+        author: formData.author || null,
       }
 
-      alert('上传成功！')
-      // 使用正确的 UUID 跳转
-      router.push(`/works/${data.id}`)
+      let resultData
+
+      if (isEditing && editId) {
+        // 编辑模式：更新现有作品
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error } = await (supabase as any)
+          .from('works')
+          .update(workData)
+          .eq('id', editId)
+          .select()
+          .single()
+
+        if (error) throw error
+        resultData = data
+        alert('更新成功！')
+      } else {
+        // 新建模式：插入新作品
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { data, error } = await (supabase as any)
+          .from('works')
+          .insert(workData)
+          .select()
+          .single()
+
+        if (error) throw error
+        resultData = data
+        alert('上传成功！')
+      }
+
+      // 确保 data 对象存在且有 id 字段
+      if (!resultData || !resultData.id) {
+        throw new Error('操作成功但未返回作品ID')
+      }
+
+      // 跳转到作品详情页
+      router.push(`/works/${resultData.id}`)
     } catch (error) {
       console.error('上传失败:', error)
       
@@ -190,19 +268,28 @@ export function UploadForm() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="text-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600 dark:text-gray-400">加载中...</p>
+      </div>
+    )
+  }
+
   return (
-    <Card className="border-0 shadow-xl">
+    <Card className="border-0 shadow-xl bg-white/90 dark:bg-gray-800/90 backdrop-filter backdrop-blur-xl">
       <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white pb-8">
-        <CardTitle className="text-3xl">上传作品</CardTitle>
+        <CardTitle className="text-3xl">{isEditing ? '编辑作品' : '上传作品'}</CardTitle>
         <CardDescription className="text-blue-50 text-base">
-          在 Gemini 3.0-撷芳集 珍藏您的优秀创作
+          {isEditing ? '修改您的作品信息' : '在 Gemini 3.0-撷芳集 珍藏您的优秀创作'}
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* 基本信息区 */}
           <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">📝 基本信息</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 border-b dark:border-gray-700 pb-2">📝 基本信息</h3>
             
             <div>
               <Label htmlFor="title" className="text-base font-medium">
@@ -414,8 +501,12 @@ export function UploadForm() {
           </div>
 
           <Button type="submit" size="lg" disabled={isSubmitting} className="w-full h-16 text-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all">
-            <Upload className="mr-2 h-6 w-6" />
-            {isSubmitting ? '上传中...' : '上传作品'}
+            {isEditing ? (
+              <Save className="mr-2 h-6 w-6" />
+            ) : (
+              <Upload className="mr-2 h-6 w-6" />
+            )}
+            {isSubmitting ? (isEditing ? '保存中...' : '上传中...') : (isEditing ? '保存修改' : '上传作品')}
           </Button>
         </form>
       </CardContent>
