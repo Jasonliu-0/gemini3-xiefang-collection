@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Sparkles, Upload, Home, Shield } from 'lucide-react'
 import { LoginButton } from '@/components/login-button'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { LocaleToggle } from '@/components/locale-toggle'
 import { useState, useEffect } from 'react'
 import { checkAdminStatus } from '@/lib/admin'
 
@@ -76,7 +75,6 @@ export function Header() {
             </>
           )}
           
-          <LocaleToggle />
           <ThemeToggle />
           <LoginButton />
         </nav>

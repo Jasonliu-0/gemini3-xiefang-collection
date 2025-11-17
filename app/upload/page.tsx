@@ -32,14 +32,14 @@ export default function UploadPage() {
 
   if (!authenticated) {
     return (
-      <div className="container py-16 max-w-2xl">
-        <Card className="shadow-lg">
+      <div className="container py-16 max-w-2xl px-4">
+        <Card className="shadow-lg bg-white/90 dark:bg-gray-800/90 backdrop-filter backdrop-blur-xl border border-gray-200 dark:border-gray-700">
             <CardHeader className="text-center pb-8">
-            <div className="mx-auto mb-4 bg-blue-100 rounded-full p-6 w-fit">
-              <Lock className="h-12 w-12 text-blue-600" />
+            <div className="mx-auto mb-4 bg-blue-100 dark:bg-blue-900/30 rounded-full p-6 w-fit">
+              <Lock className="h-12 w-12 text-blue-600 dark:text-blue-400" />
             </div>
-            <CardTitle className="text-3xl">需要登录</CardTitle>
-            <CardDescription className="text-base mt-3">
+            <CardTitle className="text-3xl text-gray-900 dark:text-gray-100">需要登录</CardTitle>
+            <CardDescription className="text-base mt-3 text-gray-600 dark:text-gray-400">
               请先登录账号，才能在 Gemini 3.0-撷芳集 分享和珍藏你的作品。
             </CardDescription>
           </CardHeader>
@@ -48,7 +48,7 @@ export default function UploadPage() {
               <Button
                 onClick={() => handleLogin('github')}
                 size="lg"
-                className="gap-2 bg-slate-900 hover:bg-slate-800 px-8 w-full md:w-auto"
+                className="gap-2 bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 px-8 w-full md:w-auto"
               >
                 <Github className="h-5 w-5" />
                 使用 GitHub 登录
@@ -57,13 +57,13 @@ export default function UploadPage() {
                 variant="outline"
                 onClick={() => handleLogin('linuxdo')}
                 size="lg"
-                className="gap-2 px-8 w-full md:w-auto"
+                className="gap-2 px-8 w-full md:w-auto border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <Terminal className="h-5 w-5" />
                 使用 Linux DO 登录
               </Button>
             </div>
-            <p className="text-sm text-gray-500 mt-6">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
               登录后即可在撷芳集上传、管理你的 Gemini 3.0 作品。
             </p>
           </CardContent>

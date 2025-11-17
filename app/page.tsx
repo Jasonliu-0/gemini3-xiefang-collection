@@ -10,7 +10,6 @@ import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Search, TrendingUp, Eye, Heart, Sparkles, Upload } from 'lucide-react'
 import { Work } from '@/types/database'
-import { useTranslation, Locale } from '@/lib/i18n'
 
 const HERO_BG_CLASSES = [
   'home-hero-bg-0',
@@ -43,19 +42,6 @@ export default function HomePage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [subtitleIndex, setSubtitleIndex] = useState(0)
   const [authError, setAuthError] = useState<string | null>(null)
-  const [locale, setLocale] = useState<Locale>('zh')
-  
-  const t = useTranslation(locale)
-  
-  // 获取语言设置
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedLocale = localStorage.getItem('locale') as Locale
-      if (savedLocale) {
-        setLocale(savedLocale)
-      }
-    }
-  }, [])
 
   // 首页背景轮播：几张公路 / 阳光风景之间自动切换
   useEffect(() => {
@@ -253,7 +239,7 @@ export default function HomePage() {
             <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 md:h-5 w-4 md:w-5 text-gray-500 flex-shrink-0" />
               <Input 
-                placeholder={t('home.searchPlaceholder')}
+                placeholder="搜索作品..."
                 className="pl-10 md:pl-12 h-11 md:h-14 text-sm md:text-base bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-400 focus:bg-white dark:focus:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-all duration-300 w-full"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -263,7 +249,7 @@ export default function HomePage() {
             <Button 
               className="h-11 md:h-14 px-4 md:px-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 font-serif text-sm md:text-base flex-shrink-0"
             >
-              {t('home.search')}
+              搜索
             </Button>
           </div>
         </div>
@@ -347,26 +333,26 @@ export default function HomePage() {
           <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 dark:bg-gray-800/90 backdrop-filter backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300">
             <Sparkles className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-all duration-300" />
             <p className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-1 md:mb-2 font-serif">{works.length}</p>
-            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">{t('stats.totalWorks')}</p>
+            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">芳华璀璨</p>
           </div>
           
           <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 dark:bg-gray-800/90 backdrop-filter backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl hover:border-green-300 dark:hover:border-green-600 transition-all duration-300">
             <Eye className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-green-600 dark:text-green-400 group-hover:scale-110 transition-all duration-300" />
             <p className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-1 md:mb-2 font-serif">{totalViews}</p>
-            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">{t('stats.totalViews')}</p>
+            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">观者云集</p>
           </div>
           
           <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 dark:bg-gray-800/90 backdrop-filter backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl hover:border-pink-300 dark:hover:border-pink-600 transition-all duration-300">
             <Heart className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-pink-600 dark:text-pink-400 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
             <p className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-1 md:mb-2 font-serif">{totalLikes}</p>
-            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">{t('stats.totalLikes')}</p>
+            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">倾心之作</p>
           </div>
         </div>
         
         {/* 排序选择 - 单独一行 */}
         <div className="flex justify-center">
           <div className="inline-flex flex-wrap items-center gap-2 md:gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl px-4 md:px-6 py-2 md:py-3 rounded-full border border-gray-200 dark:border-gray-700 shadow-md">
-            <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-serif">{t('stats.sort')}</span>
+            <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-serif">排序：</span>
             <div className="flex gap-1 md:gap-2">
               <Button
                 variant={sortBy === 'latest' ? 'default' : 'ghost'}
@@ -378,7 +364,7 @@ export default function HomePage() {
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                {t('stats.latest')}
+                时新
               </Button>
               <Button
                 variant={sortBy === 'views' ? 'default' : 'ghost'}
@@ -390,7 +376,7 @@ export default function HomePage() {
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                {t('stats.views')}
+                观瞻
               </Button>
               <Button
                 variant={sortBy === 'likes' ? 'default' : 'ghost'}
@@ -402,7 +388,7 @@ export default function HomePage() {
                     : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                {t('stats.likes')}
+                倾心
               </Button>
             </div>
           </div>
