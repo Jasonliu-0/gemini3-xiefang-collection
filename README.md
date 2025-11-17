@@ -219,23 +219,23 @@ npm run dev
 # Supabase 配置（必需）
 # ============================================
 # 在 https://supabase.com 创建项目后获取
-NEXT_PUBLIC_SUPABASE_URL=你的_Supabase_项目URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=你的_Supabase_匿名密钥
+NEXT_PUBLIC_SUPABASE_URL=your-project-url.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 # ============================================
 # Linux DO OAuth2 配置（可选）
 # ============================================
 # 在 https://connect.linux.do 申请应用
-NEXT_PUBLIC_LINUX_DO_CLIENT_ID=你的_Client_ID
-LINUX_DO_CLIENT_SECRET=你的_Client_Secret
+NEXT_PUBLIC_LINUX_DO_CLIENT_ID=your-client-id
+LINUX_DO_CLIENT_SECRET=your-client-secret
 NEXT_PUBLIC_REDIRECT_URI=http://localhost:3000/api/auth/callback
 
 # ============================================
 # GitHub OAuth2 配置（可选）
 # ============================================
 # 在 https://github.com/settings/developers 创建应用
-NEXT_PUBLIC_GITHUB_CLIENT_ID=你的_GitHub_Client_ID
-GITHUB_CLIENT_SECRET=你的_GitHub_Client_Secret
+NEXT_PUBLIC_GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
 NEXT_PUBLIC_GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/github-callback
 ```
 
@@ -251,17 +251,21 @@ NEXT_PUBLIC_GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/github-callback
 
 在 Supabase 控制台的 **SQL Editor** 中运行 `supabase-setup.sql`。
 
-### 3. 配置行级安全策略（可选）
+### 3. 禁用行级安全策略（推荐用于开发）
 
-如果遇到权限问题，可以临时禁用 RLS：
+为了简化开发，建议禁用所有表的 RLS：
 
 ```sql
 ALTER TABLE works DISABLE ROW LEVEL SECURITY;
 ALTER TABLE comments DISABLE ROW LEVEL SECURITY;
 ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
+ALTER TABLE favorites DISABLE ROW LEVEL SECURITY;
 ```
 
-> ⚠️ 注意：生产环境建议保持 RLS 启用并正确配置策略。
+> ⚠️ **安全提示**：
+> - 开发环境可以禁用 RLS 以简化调试
+> - 生产环境建议启用 RLS 并正确配置策略
+> - 或者使用 Supabase 的 Service Role Key（仅限服务端）
 
 ---
 
@@ -380,20 +384,33 @@ ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
   - 最少点赞数
 - 自动保存搜索历史（最近10条）
 
+> ⚠️ **重要提示**：收藏功能需要先在 Supabase 创建 `favorites` 表，请确保已执行 `supabase-setup.sql` 中的收藏表创建语句。
+
 ---
 
 ## 🚀 部署指南
 
-### Vercel 部署（推荐）
+### Netlify / Vercel 部署（推荐）
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new)
 
 1. Fork 本项目到你的 GitHub
-2. 在 Vercel 导入项目
+2. 在 Netlify/Vercel 导入项目
 3. 配置环境变量（同 `.env.local`）
 4. 部署完成
 
-**重要**：部署后记得更新 OAuth 回调地址为你的生产域名。
+### 生产环境检查清单
+
+部署到生产环境前，请确保：
+
+- [ ] 已配置所有必需的环境变量
+- [ ] OAuth 回调地址已更新为生产域名
+- [ ] Supabase 数据库已初始化
+- [ ] 已在 `lib/admin.ts` 中配置管理员用户名
+- [ ] 检查 `.gitignore` 是否排除了敏感文件
+- [ ] 环境变量中的密钥没有提交到代码库
+- [ ] （可选）生产环境启用 Supabase RLS
+- [ ] 测试所有核心功能是否正常
 
 ### Docker 部署
 
@@ -544,11 +561,13 @@ ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
 **A:** 在 `lib/admin.ts` 文件中的 `ADMIN_USERS` 数组添加你的 GitHub 或 Linux.do 用户名：
 ```typescript
 export const ADMIN_USERS = [
-  'Jasonliu-0',
-  'your-username', // 添加你的用户名
+  'your-github-username',
+  'your-linuxdo-username',
 ]
 ```
 重新部署后即可看到管理后台入口。
+
+**注意**：为了安全，建议通过环境变量配置管理员列表，而不是硬编码在代码中。
 </details>
 
 <details>
@@ -563,6 +582,27 @@ export const ADMIN_USERS = [
 **A:** 点击 Header 右侧的月亮/太阳图标即可切换。主题偏好会自动保存，下次访问时保持选择的主题。
 </details>
 
+<details>
+<summary><b>Q: 如何保护敏感信息？</b></summary>
+
+**A:** 
+1. ⚠️ **绝对不要**将 `.env.local` 文件提交到 Git
+2. ⚠️ **绝对不要**在代码中硬编码 API 密钥
+3. ✅ 使用环境变量管理所有敏感配置
+4. ✅ 检查 `.gitignore` 是否包含 `.env*`
+5. ✅ 部署平台（Netlify/Vercel）单独配置环境变量
+</details>
+
+<details>
+<summary><b>Q: 收藏功能报错怎么办？</b></summary>
+
+**A:** 确保：
+1. 已在 Supabase 执行收藏表创建 SQL
+2. 已禁用 `favorites` 表的 RLS
+3. 用户已登录
+4. 检查浏览器控制台的详细错误信息
+</details>
+
 ---
 
 ## 🤝 贡献指南
@@ -571,11 +611,11 @@ export const ADMIN_USERS = [
 
 ### 如何贡献
 
-1. Fork 本项目
-2. 创建特性分支：`git checkout -b feature/AmazingFeature`
-3. 提交更改：`git commit -m 'Add some AmazingFeature'`
-4. 推送到分支：`git push origin feature/AmazingFeature`
-5. 提交 Pull Request
+1. **Fork 本项目**
+2. **创建特性分支**：`git checkout -b feature/AmazingFeature`
+3. **提交更改**：`git commit -m 'Add some AmazingFeature'`
+4. **推送到分支**：`git push origin feature/AmazingFeature`
+5. **提交 Pull Request**
 
 ### 参与方式
 
@@ -583,6 +623,15 @@ export const ADMIN_USERS = [
 - 💡 [功能建议](https://github.com/Jasonliu-0/gemini3-xiefang-collection/issues/new)
 - 📖 改进文档
 - 🔧 提交代码
+- ⭐ 给项目 Star
+
+### 开发规范
+
+- 遵循现有代码风格
+- 提交前运行 `npm run build` 确保构建成功
+- 提交前运行 `npm run lint` 检查代码规范
+- 添加有意义的 commit message
+- PR 请包含功能说明
 
 ---
 
@@ -590,13 +639,33 @@ export const ADMIN_USERS = [
 
 本项目采用 [MIT License](LICENSE) 开源协议。
 
+### 许可说明
+
 您可以自由地：
 - ✅ 商业使用
 - ✅ 修改源代码
 - ✅ 分发
 - ✅ 私人使用
 
-唯一要求：保留原作者版权声明。
+### 使用要求
+
+- 📝 保留原作者版权声明
+- 📝 包含 MIT License 副本
+- 📝 声明所做的修改（如果有）
+
+### 免责声明
+
+- ⚠️ 本软件按"原样"提供，不提供任何明示或暗示的保证
+- ⚠️ 作者不对使用本软件造成的任何损害负责
+- ⚠️ 请勿将本项目用于非法用途
+
+### 安全建议
+
+- 🔒 不要在代码中硬编码敏感信息（API密钥、密码等）
+- 🔒 使用环境变量管理配置
+- 🔒 定期更新依赖包修复安全漏洞
+- 🔒 生产环境启用 Supabase RLS
+- 🔒 配置适当的 CORS 和 CSP 策略
 
 ---
 

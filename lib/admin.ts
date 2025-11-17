@@ -1,7 +1,8 @@
 // 管理员权限配置
+// 请在这里添加您的 GitHub 或 Linux.do 用户名
 export const ADMIN_USERS = [
-  'Jasonliu-0', // GitHub username
-  'Jason_ghost', // Linux.do username
+  // 'your-github-username',
+  // 'your-linuxdo-username',
 ]
 
 // 检查是否是管理员

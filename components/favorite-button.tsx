@@ -65,14 +65,19 @@ export function FavoriteButton({ workId }: FavoriteButtonProps) {
       } else {
         // 添加收藏
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { error } = await (supabase as any)
+        const { data, error } = await (supabase as any)
           .from('favorites')
-          .insert({
+          .insert([{
             work_id: workId,
             user_name: currentUser.username,
-          })
+          }])
+          .select()
 
-        if (error) throw error
+        if (error) {
+          console.error('收藏失败详情:', error)
+          throw error
+        }
+        console.log('收藏成功:', data)
         setIsFavorited(true)
       }
     } catch (error) {
