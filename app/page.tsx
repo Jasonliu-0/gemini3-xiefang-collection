@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Search, TrendingUp, Eye, Heart, Sparkles, Upload } from 'lucide-react'
 import { Work } from '@/types/database'
+import { useTranslation, Locale } from '@/lib/i18n'
 
 const HERO_BG_CLASSES = [
   'home-hero-bg-0',
@@ -42,6 +43,19 @@ export default function HomePage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [subtitleIndex, setSubtitleIndex] = useState(0)
   const [authError, setAuthError] = useState<string | null>(null)
+  const [locale, setLocale] = useState<Locale>('zh')
+  
+  const t = useTranslation(locale)
+  
+  // 获取语言设置
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLocale = localStorage.getItem('locale') as Locale
+      if (savedLocale) {
+        setLocale(savedLocale)
+      }
+    }
+  }, [])
 
   // 首页背景轮播：几张公路 / 阳光风景之间自动切换
   useEffect(() => {
@@ -239,8 +253,8 @@ export default function HomePage() {
             <div className="relative flex-1 min-w-0">
               <Search className="absolute left-3 md:left-4 top-1/2 transform -translate-y-1/2 h-4 md:h-5 w-4 md:w-5 text-gray-500 flex-shrink-0" />
               <Input 
-                placeholder="搜索作品..." 
-                className="pl-10 md:pl-12 h-11 md:h-14 text-sm md:text-base bg-white/80 backdrop-filter backdrop-blur-xl border-2 border-gray-200 focus:border-blue-400 focus:bg-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 w-full"
+                placeholder={t('home.searchPlaceholder')}
+                className="pl-10 md:pl-12 h-11 md:h-14 text-sm md:text-base bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-400 focus:bg-white dark:focus:bg-gray-800 rounded-full shadow-sm hover:shadow-md transition-all duration-300 w-full"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && e.currentTarget.blur()}
@@ -249,7 +263,7 @@ export default function HomePage() {
             <Button 
               className="h-11 md:h-14 px-4 md:px-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 font-serif text-sm md:text-base flex-shrink-0"
             >
-              搜索
+              {t('home.search')}
             </Button>
           </div>
         </div>
@@ -330,29 +344,29 @@ export default function HomePage() {
       <div className="mb-8 md:mb-16 px-4">
         {/* 统计卡片 */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-8 mb-6 md:mb-8">
-          <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 backdrop-filter backdrop-blur-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-blue-300 transition-all duration-300">
-            <Sparkles className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-blue-600 group-hover:scale-110 transition-all duration-300" />
-            <p className="text-3xl md:text-5xl font-bold text-gray-900 mb-1 md:mb-2 font-serif">{works.length}</p>
-            <p className="text-xs md:text-base text-gray-600 font-serif tracking-wide">芳华璀璨</p>
+          <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 dark:bg-gray-800/90 backdrop-filter backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300">
+            <Sparkles className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-all duration-300" />
+            <p className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-1 md:mb-2 font-serif">{works.length}</p>
+            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">{t('stats.totalWorks')}</p>
           </div>
           
-          <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 backdrop-filter backdrop-blur-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-green-300 transition-all duration-300">
-            <Eye className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-green-600 group-hover:scale-110 transition-all duration-300" />
-            <p className="text-3xl md:text-5xl font-bold text-gray-900 mb-1 md:mb-2 font-serif">{totalViews}</p>
-            <p className="text-xs md:text-base text-gray-600 font-serif tracking-wide">观者云集</p>
+          <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 dark:bg-gray-800/90 backdrop-filter backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl hover:border-green-300 dark:hover:border-green-600 transition-all duration-300">
+            <Eye className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-green-600 dark:text-green-400 group-hover:scale-110 transition-all duration-300" />
+            <p className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-1 md:mb-2 font-serif">{totalViews}</p>
+            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">{t('stats.totalViews')}</p>
           </div>
           
-          <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 backdrop-filter backdrop-blur-xl border border-gray-200 shadow-lg hover:shadow-xl hover:border-pink-300 transition-all duration-300">
-            <Heart className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-pink-600 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
-            <p className="text-3xl md:text-5xl font-bold text-gray-900 mb-1 md:mb-2 font-serif">{totalLikes}</p>
-            <p className="text-xs md:text-base text-gray-600 font-serif tracking-wide">倾心之作</p>
+          <div className="group relative overflow-hidden rounded-2xl p-5 md:p-8 text-center bg-white/90 dark:bg-gray-800/90 backdrop-filter backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-xl hover:border-pink-300 dark:hover:border-pink-600 transition-all duration-300">
+            <Heart className="h-8 md:h-12 w-8 md:w-12 mx-auto mb-2 md:mb-4 text-pink-600 dark:text-pink-400 group-hover:scale-110 group-hover:fill-current transition-all duration-300" />
+            <p className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 mb-1 md:mb-2 font-serif">{totalLikes}</p>
+            <p className="text-xs md:text-base text-gray-600 dark:text-gray-400 font-serif tracking-wide">{t('stats.totalLikes')}</p>
           </div>
         </div>
         
         {/* 排序选择 - 单独一行 */}
         <div className="flex justify-center">
-          <div className="inline-flex flex-wrap items-center gap-2 md:gap-4 bg-white/80 backdrop-filter backdrop-blur-xl px-4 md:px-6 py-2 md:py-3 rounded-full border border-gray-200 shadow-md">
-            <span className="text-xs md:text-sm text-gray-600 font-serif">排序：</span>
+          <div className="inline-flex flex-wrap items-center gap-2 md:gap-4 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl px-4 md:px-6 py-2 md:py-3 rounded-full border border-gray-200 dark:border-gray-700 shadow-md">
+            <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-serif">{t('stats.sort')}</span>
             <div className="flex gap-1 md:gap-2">
               <Button
                 variant={sortBy === 'latest' ? 'default' : 'ghost'}
@@ -361,10 +375,10 @@ export default function HomePage() {
                 className={`rounded-full font-serif px-3 md:px-4 py-1 md:py-1.5 text-xs md:text-sm transition-all duration-300 ${
                   sortBy === 'latest' 
                     ? 'bg-blue-600 text-white shadow-sm' 
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                时新
+                {t('stats.latest')}
               </Button>
               <Button
                 variant={sortBy === 'views' ? 'default' : 'ghost'}
@@ -373,10 +387,10 @@ export default function HomePage() {
                 className={`rounded-full font-serif px-3 md:px-4 py-1 md:py-1.5 text-xs md:text-sm transition-all duration-300 ${
                   sortBy === 'views' 
                     ? 'bg-blue-600 text-white shadow-sm' 
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                观瞻
+                {t('stats.views')}
               </Button>
               <Button
                 variant={sortBy === 'likes' ? 'default' : 'ghost'}
@@ -385,25 +399,27 @@ export default function HomePage() {
                 className={`rounded-full font-serif px-3 md:px-4 py-1 md:py-1.5 text-xs md:text-sm transition-all duration-300 ${
                   sortBy === 'likes' 
                     ? 'bg-blue-600 text-white shadow-sm' 
-                    : 'text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                 }`}
               >
-                倾心
+                {t('stats.likes')}
               </Button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 数据统计图表 */}
+      {/* 作品网格 */}
+      <div className="mb-12">
+        <WorkGrid works={filteredWorks} />
+      </div>
+
+      {/* 数据统计图表 - 放在作品列表之后 */}
       {works.length > 0 && (
-        <div className="mb-12 px-4">
+        <div className="px-4">
           <StatsDashboard works={works} />
         </div>
       )}
-
-      {/* 作品网格 */}
-      <WorkGrid works={filteredWorks} />
 
       {/* 空状态 - 诗意设计 */}
       {filteredWorks.length === 0 && works.length > 0 && (

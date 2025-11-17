@@ -7,9 +7,30 @@ import { checkAdminStatus } from '@/lib/admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Shield, Trash2, Eye, Heart, Calendar, User, AlertCircle } from 'lucide-react'
+import { Shield, Trash2, Eye, Heart, Calendar, User, AlertCircle, Edit } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+
+// 获取 HTML 内容（从 work-card.tsx 复制）
+const getHtmlContent = (sourceUrl: string | null) => {
+  if (!sourceUrl) return ''
+  
+  const cleanSourceUrl = sourceUrl.includes('[CODE-') 
+    ? sourceUrl.substring(sourceUrl.indexOf('data:'))
+    : sourceUrl
+  
+  const isHtmlCode = cleanSourceUrl && cleanSourceUrl.startsWith('data:') && cleanSourceUrl.includes('data:text/html')
+  
+  if (!isHtmlCode) return ''
+  
+  try {
+    const base64Data = cleanSourceUrl.split(',')[1]
+    return decodeURIComponent(escape(atob(base64Data)))
+  } catch (error) {
+    console.error('Failed to decode HTML:', error)
+    return ''
+  }
+}
 
 export default function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(false)
@@ -182,7 +203,10 @@ export default function AdminPage() {
                 暂无作品
               </div>
             ) : (
-              works.map((work) => (
+              works.map((work) => {
+                const htmlContent = getHtmlContent(work.source_code_url)
+                
+                return (
                 <div
                   key={work.id}
                   className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors"
@@ -196,6 +220,14 @@ export default function AdminPage() {
                         width={128}
                         height={80}
                         className="w-full h-full object-cover"
+                      />
+                    ) : htmlContent ? (
+                      <iframe
+                        srcDoc={htmlContent}
+                        className="w-full h-full pointer-events-none scale-50 origin-top-left"
+                        sandbox="allow-scripts"
+                        title={work.title}
+                        style={{ width: '200%', height: '200%' }}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-xs">
@@ -249,6 +281,12 @@ export default function AdminPage() {
                         查看
                       </Button>
                     </Link>
+                    <Link href={`/upload?edit=${work.id}`}>
+                      <Button variant="outline" size="sm" className="w-full text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-700">
+                        <Edit className="h-3 w-3 mr-1" />
+                        编辑
+                      </Button>
+                    </Link>
                     <Button
                       variant="destructive"
                       size="sm"
@@ -260,7 +298,7 @@ export default function AdminPage() {
                     </Button>
                   </div>
                 </div>
-              ))
+              )})
             )}
           </div>
         </CardContent>
