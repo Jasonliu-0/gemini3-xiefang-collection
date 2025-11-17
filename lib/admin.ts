@@ -1,6 +1,6 @@
 // 管理员权限配置
 // 请在这里添加您的 GitHub 或 Linux.do 用户名
-export const ADMIN_USERS = [
+export const ADMIN_USERS: string[] = [
   // 'your-github-username',
   // 'your-linuxdo-username',
 ]
