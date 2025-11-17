@@ -95,15 +95,15 @@ export function StatsDashboard({ works }: StatsDashboardProps) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={350}>
                 <PieChart>
                   <Pie
                     data={tagStats}
                     cx="50%"
                     cy="50%"
-                    labelLine={false}
-                    label={(entry: any) => `${entry.name} ${(entry.percent * 100).toFixed(0)}%`} // eslint-disable-line @typescript-eslint/no-explicit-any
-                    outerRadius={80}
+                    labelLine={true}
+                    label={(entry: any) => `${(entry.percent * 100).toFixed(0)}%`} // eslint-disable-line @typescript-eslint/no-explicit-any
+                    outerRadius={90}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -115,10 +115,15 @@ export function StatsDashboard({ works }: StatsDashboardProps) {
                     contentStyle={{ 
                       backgroundColor: 'rgba(255, 255, 255, 0.95)',
                       border: '1px solid #e5e7eb',
-                      borderRadius: '8px'
+                      borderRadius: '8px',
+                      padding: '8px 12px'
                     }}
+                    formatter={(value: number, name: string) => [`${value} 个作品`, name]}
                   />
-                  <Legend />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    formatter={(value) => <span style={{ fontSize: '14px' }}>{value}</span>}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
