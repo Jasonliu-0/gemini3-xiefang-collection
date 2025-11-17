@@ -60,6 +60,28 @@
    - 一键回到顶部
    - 源码下载和预览
 
+7. **🌙 深色模式**
+   - 优雅的深色主题
+   - 一键切换，平滑过渡
+   - 所有组件完美适配
+
+8. **📊 数据统计图表**
+   - 热门标签分布饼图
+   - 月度作品趋势图
+   - TOP 10 作品浏览量对比
+   - 实时数据可视化
+
+9. **🌍 多语言支持**
+   - 中英文切换
+   - 完整的翻译配置
+   - 本地化用户体验
+
+10. **🛡️ 管理员后台**
+    - 权限控制系统
+    - 作品管理面板
+    - 数据监控概览
+    - 一键删除作品
+
 ---
 
 ## 🎯 完整功能列表
@@ -112,11 +134,25 @@
 
 ### 🎨 UI/UX
 - ✅ 优雅的中式美学设计
-- ✅ 响应式布局
+- ✅ 响应式布局（完美适配移动端）
 - ✅ 毛玻璃效果
 - ✅ 平滑动画过渡
 - ✅ 首页背景轮播
 - ✅ 打字机效果标语
+- ✅ **深色模式切换**
+- ✅ **多语言支持（中/英）**
+
+### 📊 数据分析
+- ✅ **热门标签分布饼图**
+- ✅ **月度作品趋势图**
+- ✅ **TOP 10 作品排行榜**
+- ✅ 实时统计数据展示
+
+### 🛡️ 管理功能
+- ✅ **管理员权限系统**
+- ✅ **作品管理后台**
+- ✅ **数据监控面板**
+- ✅ **作品删除功能**
 
 ---
 
@@ -281,6 +317,29 @@ ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
 - **分享**：点击分享按钮分享到社交平台
 - **下载**：登录用户可下载作品源码
 
+### 新功能使用
+
+#### 深色模式
+- 点击 Header 右侧的 🌙/☀️ 图标切换主题
+- 自动保存偏好设置
+- 支持系统主题跟随
+
+#### 统计图表
+- 首页自动展示数据统计
+- 包含标签分布、月度趋势、热门作品
+- 支持深色模式适配
+
+#### 多语言切换
+- 点击 Header 右侧的 🌍 图标
+- 选择"简体中文"或"English"
+- 刷新页面后生效
+
+#### 管理员后台
+- 管理员登录后，Header 显示 🛡️ "管理后台"按钮
+- 访问 `/admin` 页面管理所有作品
+- 可查看数据概览、删除作品
+- 非管理员访问显示"访问受限"
+
 ---
 
 ## 🚀 部署指南
@@ -318,6 +377,9 @@ gemini3-xiefang-collection/
 ├── app/                      # Next.js App Router
 │   ├── api/                 # API 路由
 │   │   └── auth/           # OAuth 回调
+│   │       ├── callback/   # Linux.do 回调
+│   │       └── github-callback/ # GitHub 回调
+│   ├── admin/              # 🆕 管理员后台
 │   ├── upload/             # 上传页面
 │   ├── works/              # 作品详情页
 │   ├── layout.tsx          # 全局布局
@@ -330,17 +392,24 @@ gemini3-xiefang-collection/
 │   ├── header.tsx          # 导航栏
 │   ├── like-button.tsx     # 点赞按钮
 │   ├── login-button.tsx    # 登录按钮
+│   ├── locale-toggle.tsx   # 🆕 语言切换
+│   ├── theme-toggle.tsx    # 🆕 主题切换
+│   ├── theme-provider.tsx  # 🆕 主题提供器
+│   ├── stats-dashboard.tsx # 🆕 统计图表
 │   ├── source-code-viewer.tsx # 源码查看器
 │   ├── upload-form.tsx     # 上传表单
 │   ├── work-card.tsx       # 作品卡片
 │   └── work-grid.tsx       # 作品网格
 ├── lib/                     # 工具函数
+│   ├── admin.ts            # 🆕 管理员权限
 │   ├── auth.ts             # 认证逻辑
+│   ├── i18n.ts             # 🆕 多语言配置
 │   ├── supabase.ts         # Supabase 客户端
 │   └── utils.ts            # 通用工具
 ├── types/                   # TypeScript 类型
 │   └── database.ts         # 数据库类型
 ├── supabase-setup.sql      # 数据库初始化脚本
+├── netlify.toml            # 🆕 Netlify 配置
 ├── Dockerfile              # Docker 配置
 ├── docker-compose.yml      # Docker Compose 配置
 ├── package.json            # 依赖配置
@@ -359,8 +428,10 @@ gemini3-xiefang-collection/
 - **UI 组件**：[shadcn/ui](https://ui.shadcn.com/)
 - **数据库**：[Supabase](https://supabase.com/) (PostgreSQL)
 - **认证**：OAuth2 (Linux DO / GitHub)
-- **部署**：[Vercel](https://vercel.com/) / Docker
+- **部署**：[Netlify](https://www.netlify.com/) / Vercel / Docker
 - **图标**：[Lucide Icons](https://lucide.dev/)
+- **图表**：[Recharts](https://recharts.org/) - 数据可视化
+- **主题**：[next-themes](https://github.com/pacocoursey/next-themes) - 深色模式
 
 ---
 
@@ -429,6 +500,33 @@ ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
 **A:** Base64 存储适合 < 1MB 的代码文件。大文件建议使用 Supabase Storage 或外部链接。
 </details>
 
+<details>
+<summary><b>Q: 如何成为管理员？</b></summary>
+
+**A:** 在 `lib/admin.ts` 文件中的 `ADMIN_USERS` 数组添加你的 GitHub 或 Linux.do 用户名：
+```typescript
+export const ADMIN_USERS = [
+  'Jasonliu-0',
+  'your-username', // 添加你的用户名
+]
+```
+</details>
+
+<details>
+<summary><b>Q: 深色模式不生效？</b></summary>
+
+**A:** 确保：
+1. 已安装 `next-themes` 依赖
+2. 清除浏览器缓存
+3. 检查浏览器控制台是否有错误
+</details>
+
+<details>
+<summary><b>Q: 统计图表不显示？</b></summary>
+
+**A:** 统计图表需要至少有 1 个作品才会显示。上传作品后即可看到。
+</details>
+
 ---
 
 ## 🤝 贡献指南
@@ -475,8 +573,10 @@ ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
 - [Tailwind CSS](https://tailwindcss.com/) - 实用优先的 CSS 框架
 - [shadcn/ui](https://ui.shadcn.com/) - 精美的 React 组件库
 - [Lucide Icons](https://lucide.dev/) - 优雅的图标库
+- [Recharts](https://recharts.org/) - 强大的图表库
+- [next-themes](https://github.com/pacocoursey/next-themes) - 主题切换解决方案
 - [Linux DO](https://linux.do/) - Linux 中文社区
-- [Vercel](https://vercel.com/) - 前端部署平台
+- [Netlify](https://www.netlify.com/) - 前端部署平台
 
 ---
 
@@ -493,22 +593,27 @@ ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
 - [x] 回到顶部
 - [x] 评论分页
 
+### 新增功能 ✅
+- [x] **深色模式** - 优雅的深色主题，一键切换
+- [x] **统计图表** - 数据可视化，热门标签、月度趋势、TOP 10 作品
+- [x] **多语言支持** - 中英文切换（基础架构完成）
+- [x] **管理员后台** - 作品管理、数据监控、删除功能
+
 ### 计划中 🚧
 - [ ] 用户个人主页
 - [ ] 作品收藏功能
 - [ ] 高级搜索
-- [ ] 作品统计图表
-- [ ] 管理员后台
-- [ ] 多语言支持
-- [ ] 深色模式
+- [ ] 完整的多语言翻译
+- [ ] 数据导出功能
 
 ---
 
 ## 📊 项目统计
 
-- **版本**：v3.0.0
-- **功能数量**：30+ 个核心功能
-- **技术栈**：10+ 个主流技术
+- **版本**：v3.1.0
+- **功能数量**：40+ 个核心功能
+- **技术栈**：12+ 个主流技术
+- **新增功能**：深色模式、统计图表、多语言、管理后台
 - **开发周期**：持续更新中
 
 ---
