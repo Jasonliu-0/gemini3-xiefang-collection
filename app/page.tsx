@@ -257,9 +257,9 @@ export default function HomePage() {
 
       {/* 排序和筛选条件显示 */}
       {(selectedTag || searchQuery) && (
-        <div className="mb-8 bg-white/15 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-2 border-white/50 rounded-xl p-4 shadow-lg">
+        <div className="mb-8 bg-white/15 dark:bg-gray-800/40 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-2 border-white/50 dark:border-gray-600/50 rounded-xl p-4 shadow-lg">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-sm font-medium text-blue-900">当前筛选：</span>
+            <span className="text-sm font-medium text-blue-900 dark:text-blue-300">当前筛选：</span>
             {searchQuery && (
               <Badge className="gap-2 bg-blue-600">
                 搜索: &quot;{searchQuery}&quot;
@@ -293,16 +293,16 @@ export default function HomePage() {
       {popularTags.length > 0 && (
         <div className="mb-12 px-4">
           <div className="text-center mb-6 md:mb-8">
-            <div className="inline-flex items-center gap-2 md:gap-3 bg-white/80 backdrop-filter backdrop-blur-xl px-4 md:px-6 py-2 md:py-3 rounded-full shadow-md border border-gray-200">
-              <TrendingUp className="h-4 md:h-5 w-4 md:w-5 text-blue-600" />
-              <span className="text-sm md:text-base font-semibold text-gray-900 font-serif">热门标签</span>
+            <div className="inline-flex items-center gap-2 md:gap-3 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl px-4 md:px-6 py-2 md:py-3 rounded-full shadow-md border border-gray-200 dark:border-gray-700">
+              <TrendingUp className="h-4 md:h-5 w-4 md:w-5 text-blue-600 dark:text-blue-400" />
+              <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-gray-100 font-serif">热门标签</span>
             </div>
             {selectedTag && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedTag(null)}
-                className="ml-2 md:ml-4 text-xs md:text-sm text-gray-600 font-serif hover:bg-gray-100 mt-2 md:mt-0"
+                className="ml-2 md:ml-4 text-xs md:text-sm text-gray-600 dark:text-gray-400 font-serif hover:bg-gray-100 dark:hover:bg-gray-800 mt-2 md:mt-0"
               >
                 清除筛选
               </Button>
@@ -315,7 +315,7 @@ export default function HomePage() {
                 className={`cursor-pointer transition-all duration-300 text-xs md:text-sm px-3 md:px-4 py-1.5 md:py-2 rounded-full border font-serif
                   ${selectedTag === tag 
                     ? 'bg-blue-600 text-white border-blue-600 shadow-md scale-105' 
-                    : 'bg-white/70 backdrop-filter backdrop-blur-md text-gray-700 border-gray-300 hover:border-blue-400 hover:shadow-md hover:scale-105'
+                    : 'bg-white/70 dark:bg-gray-800/70 backdrop-filter backdrop-blur-md text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-md hover:scale-105'
                   }`}
                 onClick={() => handleTagClick(tag)}
               >
@@ -409,12 +409,12 @@ export default function HomePage() {
 
       {/* 空状态 - 诗意设计 */}
       {filteredWorks.length === 0 && works.length > 0 && (
-        <div className="text-center py-12 md:py-20 bg-white/80 backdrop-filter backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-lg border border-gray-200 mx-4">
+        <div className="text-center py-12 md:py-20 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 mx-4">
           <div className="text-5xl md:text-6xl mb-4 md:mb-6">🌸</div>
-          <p className="text-2xl md:text-3xl text-gray-900 mb-2 md:mb-3 font-calligraphy px-4">
+          <p className="text-2xl md:text-3xl text-gray-900 dark:text-gray-100 mb-2 md:mb-3 font-calligraphy px-4">
             未觅芳踪
           </p>
-          <p className="text-sm md:text-base text-gray-600 mb-6 md:mb-8 font-serif px-4">
+          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6 md:mb-8 font-serif px-4">
             暂无匹配的作品，试试其他筛选条件
           </p>
           <Button
@@ -430,12 +430,12 @@ export default function HomePage() {
       )}
 
       {works.length === 0 && (
-        <div className="text-center py-16 md:py-24 bg-white/80 backdrop-filter backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-lg border border-gray-200 mx-4">
-          <Sparkles className="h-16 w-16 md:h-24 md:w-24 mx-auto mb-6 md:mb-8 text-blue-600" />
-          <p className="text-3xl md:text-4xl text-gray-900 mb-3 md:mb-4 font-calligraphy px-4">
+        <div className="text-center py-16 md:py-24 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 mx-4">
+          <Sparkles className="h-16 w-16 md:h-24 md:w-24 mx-auto mb-6 md:mb-8 text-blue-600 dark:text-blue-400" />
+          <p className="text-3xl md:text-4xl text-gray-900 dark:text-gray-100 mb-3 md:mb-4 font-calligraphy px-4">
             待君撷芳
           </p>
-          <p className="text-base md:text-lg text-gray-700 mb-8 md:mb-10 max-w-md mx-auto leading-relaxed font-serif px-4">
+          <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 md:mb-10 max-w-md mx-auto leading-relaxed font-serif px-4">
             此处尚无佳作，期待您的优秀创作<br/>
             成为撷芳集的第一缕芬芳
           </p>

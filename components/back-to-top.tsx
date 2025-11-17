@@ -42,9 +42,9 @@ export function BackToTopButton() {
       size="icon"
       onClick={handleClick}
       aria-label="回到顶部"
-      className="fixed bottom-20 md:bottom-24 right-4 md:right-6 z-40 rounded-full shadow-lg bg-white/90 hover:bg-white w-10 h-10 md:w-11 md:h-11"
+      className="fixed bottom-20 md:bottom-24 right-4 md:right-6 z-40 rounded-full shadow-lg bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-700 border-gray-200 dark:border-gray-700 w-10 h-10 md:w-11 md:h-11 backdrop-filter backdrop-blur-xl"
     >
-      <ArrowUp className="h-4 w-4 md:h-5 md:w-5" />
+      <ArrowUp className="h-4 w-4 md:h-5 md:w-5 text-gray-700 dark:text-gray-300" />
     </Button>
   )
 }
