@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { WorkGrid } from '@/components/work-grid'
+import { StatsDashboard } from '@/components/stats-dashboard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -393,6 +394,13 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* 数据统计图表 */}
+      {works.length > 0 && (
+        <div className="mb-12 px-4">
+          <StatsDashboard works={works} />
+        </div>
+      )}
 
       {/* 作品网格 */}
       <WorkGrid works={filteredWorks} />

@@ -6,6 +6,7 @@ import { Header } from '@/components/header'
 import { Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { BackToTopButton } from '@/components/back-to-top'
+import { ThemeProvider } from '@/components/theme-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 const notoSerifSC = Noto_Serif_SC({ 
@@ -46,16 +47,22 @@ export default async function RootLayout({
     worksData?.reduce((sum, w) => sum + ((w as { likes?: number }).likes ?? 0), 0) ?? 0
 
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
       <body
         id="page-top"
         className={`${inter.className} ${notoSerifSC.variable} ${maShanZheng.variable}`}
       >
-        <Header />
-        <main className="min-h-screen">
-          {children}
-        </main>
-        <BackToTopButton />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          <main className="min-h-screen">
+            {children}
+          </main>
+          <BackToTopButton />
         <footer className="bg-white/40 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-t border-white/40 py-6 md:py-8 mt-8 md:mt-10 shadow-lg">
           <div className="container px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
@@ -170,6 +177,7 @@ export default async function RootLayout({
             </div>
           </div>
         </footer>
+        </ThemeProvider>
       </body>
     </html>
   )
