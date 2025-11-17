@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { WorkGrid } from '@/components/work-grid'
 import { StatsDashboard } from '@/components/stats-dashboard'
+import { AdvancedSearch, SearchFilters } from '@/components/advanced-search'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -42,6 +43,7 @@ export default function HomePage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [subtitleIndex, setSubtitleIndex] = useState(0)
   const [authError, setAuthError] = useState<string | null>(null)
+  const [advancedFilters, setAdvancedFilters] = useState<SearchFilters | null>(null)
 
   // 首页背景轮播：几张公路 / 阳光风景之间自动切换
   useEffect(() => {
@@ -149,20 +151,55 @@ export default function HomePage() {
   const filteredWorks = useMemo(() => {
     let filtered = [...works]
 
-    // 搜索过滤
-    if (searchQuery) {
-      filtered = filtered.filter(work =>
-        work.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        work.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        work.author?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    }
+    // 高级搜索过滤
+    if (advancedFilters) {
+      // 关键词
+      if (advancedFilters.keyword) {
+        filtered = filtered.filter(work =>
+          work.title.toLowerCase().includes(advancedFilters.keyword.toLowerCase()) ||
+          work.description?.toLowerCase().includes(advancedFilters.keyword.toLowerCase())
+        )
+      }
+      
+      // 作者
+      if (advancedFilters.author) {
+        filtered = filtered.filter(work =>
+          work.author?.toLowerCase().includes(advancedFilters.author.toLowerCase())
+        )
+      }
+      
+      // 标签
+      if (advancedFilters.tags.length > 0) {
+        filtered = filtered.filter(work =>
+          work.tags && advancedFilters.tags.some(tag => work.tags?.includes(tag))
+        )
+      }
+      
+      // 最少浏览量
+      if (advancedFilters.minViews > 0) {
+        filtered = filtered.filter(work => work.views >= advancedFilters.minViews)
+      }
+      
+      // 最少点赞数
+      if (advancedFilters.minLikes > 0) {
+        filtered = filtered.filter(work => work.likes >= advancedFilters.minLikes)
+      }
+    } else {
+      // 简单搜索过滤
+      if (searchQuery) {
+        filtered = filtered.filter(work =>
+          work.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          work.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          work.author?.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      }
 
-    // 标签过滤
-    if (selectedTag) {
-      filtered = filtered.filter(work =>
-        work.tags && work.tags.includes(selectedTag)
-      )
+      // 标签过滤
+      if (selectedTag) {
+        filtered = filtered.filter(work =>
+          work.tags && work.tags.includes(selectedTag)
+        )
+      }
     }
 
     // 排序
@@ -177,13 +214,20 @@ export default function HomePage() {
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         )
     }
-  }, [works, searchQuery, selectedTag, sortBy])
+  }, [works, searchQuery, selectedTag, sortBy, advancedFilters])
 
   const totalViews = useMemo(() => works.reduce((sum, work) => sum + work.views, 0), [works])
   const totalLikes = useMemo(() => works.reduce((sum, work) => sum + work.likes, 0), [works])
 
   const handleTagClick = useCallback((tag: string) => {
     setSelectedTag(prev => prev === tag ? null : tag)
+  }, [])
+
+  const handleAdvancedSearch = useCallback((filters: SearchFilters) => {
+    setAdvancedFilters(filters)
+    // 清空简单搜索
+    setSearchQuery('')
+    setSelectedTag(null)
   }, [])
 
   return (
@@ -325,6 +369,14 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+      {/* 高级搜索 */}
+      <div className="px-4 mb-8">
+        <AdvancedSearch 
+          onSearch={handleAdvancedSearch}
+          availableTags={popularTags.map(t => t.tag)}
+        />
+      </div>
 
       {/* 统计信息 + 排序 - 诗意设计 */}
       <div className="mb-8 md:mb-16 px-4">

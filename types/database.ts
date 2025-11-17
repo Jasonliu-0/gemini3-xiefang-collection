@@ -99,6 +99,26 @@ export interface Database {
           created_at?: string
         }
       }
+      favorites: {
+        Row: {
+          id: string
+          work_id: string
+          user_name: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          work_id: string
+          user_name: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          work_id?: string
+          user_name?: string
+          created_at?: string
+        }
+      }
     }
   }
 }
@@ -106,4 +126,5 @@ export interface Database {
 export type Work = Database['public']['Tables']['works']['Row']
 export type Comment = Database['public']['Tables']['comments']['Row']
 export type Like = Database['public']['Tables']['likes']['Row']
+export type Favorite = Database['public']['Tables']['favorites']['Row']
 

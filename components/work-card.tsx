@@ -92,20 +92,33 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
             </div>
           )}
         </CardContent>
-        <CardFooter className="relative z-20 px-4 md:px-6 pb-4 md:pb-6 pt-3 md:pt-4 flex items-center justify-between text-xs md:text-sm bg-gradient-to-b from-white/10 to-white/20 backdrop-blur-xl border-t border-white/30">
-          <div className="flex items-center gap-3 md:gap-4 font-serif">
-            <span className="flex items-center gap-1 md:gap-1.5 text-blue-600">
-              <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              <span className="text-gray-700">{formatNumber(work.views)}</span>
-            </span>
-            <span className="flex items-center gap-1 md:gap-1.5 text-pink-600">
-              <Heart className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              <span className="text-gray-700">{formatNumber(work.likes)}</span>
+        <CardFooter className="relative z-20 px-4 md:px-6 pb-4 md:pb-6 pt-3 md:pt-4 flex flex-col gap-2 text-xs md:text-sm bg-gradient-to-b from-white/10 to-white/20 backdrop-blur-xl border-t border-white/30">
+          <div className="flex items-center justify-between w-full font-serif">
+            <div className="flex items-center gap-3 md:gap-4">
+              <span className="flex items-center gap-1 md:gap-1.5 text-blue-600 dark:text-blue-400">
+                <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                <span className="text-gray-700 dark:text-gray-300">{formatNumber(work.views)}</span>
+              </span>
+              <span className="flex items-center gap-1 md:gap-1.5 text-pink-600 dark:text-pink-400">
+                <Heart className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                <span className="text-gray-700 dark:text-gray-300">{formatNumber(work.likes)}</span>
+              </span>
+            </div>
+            <span className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 font-serif">
+              {formatDate(work.created_at)}
             </span>
           </div>
-          <span className="text-[10px] md:text-xs text-gray-500 font-serif">
-            {formatDate(work.created_at)}
-          </span>
+          {work.author && (
+            <div className="w-full">
+              <Link 
+                href={`/user/${encodeURIComponent(work.author)}`}
+                className="text-[10px] md:text-xs text-blue-600 dark:text-blue-400 hover:underline font-serif"
+                onClick={(e) => e.stopPropagation()}
+              >
+                作者：{work.author}
+              </Link>
+            </div>
+          )}
         </CardFooter>
       </Card>
     </Link>

@@ -2,17 +2,20 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Sparkles, Upload, Home, Shield } from 'lucide-react'
+import { Sparkles, Upload, Home, Shield, Star } from 'lucide-react'
 import { LoginButton } from '@/components/login-button'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { useState, useEffect } from 'react'
 import { checkAdminStatus } from '@/lib/admin'
+import { isAuthenticated } from '@/lib/auth'
 
 export function Header() {
   const [isAdmin, setIsAdmin] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   useEffect(() => {
     setIsAdmin(checkAdminStatus())
+    setIsLoggedIn(isAuthenticated())
   }, [])
 
   return (
@@ -43,6 +46,23 @@ export function Header() {
               <Home className="h-4 w-4" />
             </Button>
           </Link>
+          
+          {/* 我的收藏 - 仅登录用户可见 */}
+          {isLoggedIn && (
+            <>
+              <Link href="/favorites" className="hidden md:block">
+                <Button variant="ghost" className="gap-2 text-yellow-700 dark:text-yellow-400">
+                  <Star className="h-4 w-4" />
+                  我的收藏
+                </Button>
+              </Link>
+              <Link href="/favorites" className="md:hidden">
+                <Button variant="ghost" size="sm" className="text-yellow-700 dark:text-yellow-400 px-2">
+                  <Star className="h-4 w-4" />
+                </Button>
+              </Link>
+            </>
+          )}
           
           {/* 桌面端：显示完整文字 */}
           <Link href="/upload" className="hidden md:block">

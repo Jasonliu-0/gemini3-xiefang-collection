@@ -41,15 +41,27 @@ CREATE TABLE IF NOT EXISTS likes (
   UNIQUE(work_id, user_ip)
 );
 
+-- 创建收藏表
+CREATE TABLE IF NOT EXISTS favorites (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  work_id UUID NOT NULL REFERENCES works(id) ON DELETE CASCADE,
+  user_name TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(work_id, user_name)
+);
+
 -- 创建索引以提高查询性能
 CREATE INDEX IF NOT EXISTS idx_works_created_at ON works(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_comments_work_id ON comments(work_id);
 CREATE INDEX IF NOT EXISTS idx_likes_work_id ON likes(work_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_work_id ON favorites(work_id);
+CREATE INDEX IF NOT EXISTS idx_favorites_user_name ON favorites(user_name);
 
 -- 启用行级安全策略 (RLS)
 ALTER TABLE works ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE likes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
 
 -- 创建策略：所有人可以读取
 CREATE POLICY "允许所有人查看作品" ON works
@@ -61,6 +73,9 @@ CREATE POLICY "允许所有人查看评论" ON comments
 CREATE POLICY "允许所有人查看点赞" ON likes
   FOR SELECT USING (true);
 
+CREATE POLICY "允许所有人查看收藏" ON favorites
+  FOR SELECT USING (true);
+
 -- 创建策略：所有人可以插入
 CREATE POLICY "允许所有人上传作品" ON works
   FOR INSERT WITH CHECK (true);
@@ -70,6 +85,13 @@ CREATE POLICY "允许所有人评论" ON comments
 
 CREATE POLICY "允许所有人点赞" ON likes
   FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "允许所有人收藏" ON favorites
+  FOR INSERT WITH CHECK (true);
+
+-- 创建策略：允许删除自己的收藏
+CREATE POLICY "允许删除自己的收藏" ON favorites
+  FOR DELETE USING (true);
 
 -- 创建策略：允许更新浏览量和点赞数
 CREATE POLICY "允许更新作品统计" ON works
