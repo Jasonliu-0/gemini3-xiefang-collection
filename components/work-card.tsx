@@ -37,8 +37,8 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
 
   return (
     <Link href={`/works/${work.id}`}>
-      <Card className="glass-card group overflow-hidden relative transform-gpu bg-white/90 hover:bg-white">
-        <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 to-gray-50 group-hover:from-blue-100 group-hover:to-gray-100 transition-all duration-300">
+      <Card className="glass-card group overflow-hidden relative transform-gpu bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800">
+        <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 to-gray-50 dark:from-gray-800 dark:to-gray-700 group-hover:from-blue-100 group-hover:to-gray-100 dark:group-hover:from-gray-700 dark:group-hover:to-gray-600 transition-all duration-300">
           {/* 装饰性渐变层 */}
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/5 to-transparent"></div>
           {work.thumbnail ? (
@@ -59,18 +59,25 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
               sandbox="allow-scripts"
               title={work.title}
             />
+          ) : work.url ? (
+            <iframe
+              src={work.url}
+              className="w-full h-full pointer-events-none"
+              sandbox="allow-scripts allow-same-origin"
+              title={work.title}
+            />
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
               暂无预览
             </div>
           )}
         </div>
-        <CardContent className="relative z-20 p-4 md:p-6 bg-white/80 backdrop-filter backdrop-blur-xl">
-          <h3 className="font-bold text-lg md:text-xl line-clamp-2 mb-2 md:mb-3 text-gray-900 group-hover:text-blue-700 transition-all duration-300 font-serif">
+        <CardContent className="relative z-20 p-4 md:p-6 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl">
+          <h3 className="font-bold text-lg md:text-xl line-clamp-2 mb-2 md:mb-3 text-gray-900 dark:text-gray-100 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-all duration-300 font-serif">
             {work.title}
           </h3>
           {work.description && (
-            <p className="text-xs md:text-sm text-gray-600 line-clamp-2 mb-3 md:mb-4 leading-relaxed font-serif">
+            <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3 md:mb-4 leading-relaxed font-serif">
               {work.description}
             </p>
           )}
@@ -79,13 +86,13 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
               {work.tags.slice(0, 3).map((tag) => (
                 <Badge 
                   key={tag} 
-                  className="text-[10px] md:text-xs px-2 md:px-3 py-0.5 md:py-1 bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-600 hover:text-white hover:scale-105 transition-all duration-200 rounded-full font-serif"
+                  className="text-[10px] md:text-xs px-2 md:px-3 py-0.5 md:py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 hover:bg-blue-600 hover:text-white hover:scale-105 transition-all duration-200 rounded-full font-serif"
                 >
                   {tag}
                 </Badge>
               ))}
               {work.tags.length > 3 && (
-                <Badge className="text-[10px] md:text-xs px-2 md:px-3 py-0.5 md:py-1 bg-gray-100 text-gray-600 border border-gray-200 rounded-full">
+                <Badge className="text-[10px] md:text-xs px-2 md:px-3 py-0.5 md:py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-full">
                   +{work.tags.length - 3}
                 </Badge>
               )}
