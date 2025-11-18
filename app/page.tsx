@@ -116,9 +116,11 @@ export default function HomePage() {
   }, [])
 
   const loadWorks = useCallback(async () => {
-    const { data, error } = await supabase
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase as any)
       .from('works')
       .select('*')
+      .eq('is_approved', true) // 只显示已审核通过的作品
       .order('created_at', { ascending: false })
 
     if (!error && data) {

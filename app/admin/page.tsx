@@ -7,7 +7,7 @@ import { checkAdminStatus } from '@/lib/admin'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Shield, Trash2, Eye, Heart, Calendar, User, AlertCircle, Edit } from 'lucide-react'
+import { Shield, Trash2, Eye, Heart, Calendar, User, AlertCircle, Edit, EyeOff } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -84,6 +84,31 @@ export default function AdminPage() {
     } catch (error) {
       console.error('删除失败:', error)
       alert('删除失败，请重试')
+    }
+  }
+
+  const handleToggleApproval = async (workId: string, currentStatus: boolean, title: string) => {
+    const action = currentStatus ? '隐藏' : '显示'
+    if (!confirm(`确定要${action}作品「${title}」吗？`)) {
+      return
+    }
+
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error } = await (supabase as any)
+        .from('works')
+        .update({ is_approved: !currentStatus })
+        .eq('id', workId)
+
+      if (error) throw error
+
+      alert(`${action}成功！`)
+      setWorks(works.map(w => 
+        w.id === workId ? { ...w, is_approved: !currentStatus } : w
+      ))
+    } catch (error) {
+      console.error('操作失败:', error)
+      alert('操作失败，请重试')
     }
   }
 
@@ -247,8 +272,14 @@ export default function AdminPage() {
                     <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                       <span className="flex items-center gap-1">
                         <User className="h-3 w-3" />
-                        {work.author || '匿名'}
+                        作者: {work.author || '匿名'}
                       </span>
+                      {work.uploaded_by && (
+                        <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400">
+                          <User className="h-3 w-3" />
+                          上传者: {work.uploaded_by}
+                        </span>
+                      )}
                       <span className="flex items-center gap-1">
                         <Eye className="h-3 w-3" />
                         {work.views}
@@ -287,6 +318,28 @@ export default function AdminPage() {
                         编辑
                       </Button>
                     </Link>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleToggleApproval(work.id, work.is_approved, work.title)}
+                      className={`w-full ${
+                        work.is_approved 
+                          ? 'text-orange-600 dark:text-orange-400 border-orange-300 dark:border-orange-700' 
+                          : 'text-green-600 dark:text-green-400 border-green-300 dark:border-green-700'
+                      }`}
+                    >
+                      {work.is_approved ? (
+                        <>
+                          <EyeOff className="h-3 w-3 mr-1" />
+                          隐藏
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="h-3 w-3 mr-1" />
+                          显示
+                        </>
+                      )}
+                    </Button>
                     <Button
                       variant="destructive"
                       size="sm"

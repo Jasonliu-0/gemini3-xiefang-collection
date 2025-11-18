@@ -189,6 +189,18 @@ export function UploadForm() {
         sourceCodeUrl = formData.sourceCodeUrl
       }
 
+      // 获取当前登录用户信息
+      let uploadedBy: string | null = null
+      try {
+        const userStr = localStorage.getItem('linuxdo_user')
+        if (userStr) {
+          const user = JSON.parse(userStr)
+          uploadedBy = user.username || user.name || null
+        }
+      } catch (error) {
+        console.error('获取用户信息失败:', error)
+      }
+
       // 准备作品数据
       const workData = {
         title: formData.title,
@@ -199,6 +211,9 @@ export function UploadForm() {
         thumbnail: thumbnailUrl || null,
         tags: selectedTags.length > 0 ? selectedTags : null,
         author: formData.author || null,
+        uploaded_by: uploadedBy,
+        uploaded_at: new Date().toISOString(),
+        is_approved: true, // 默认自动通过，管理员可以后台修改
       }
 
       let resultData

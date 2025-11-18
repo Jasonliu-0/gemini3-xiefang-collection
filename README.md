@@ -402,18 +402,88 @@ ALTER TABLE favorites DISABLE ROW LEVEL SECURITY;
 3. 配置环境变量（同 `.env.local`）
 4. 部署完成
 
-### 生产环境检查清单
+### 🔒 生产环境安全部署（重要！）
 
-部署到生产环境前，请确保：
+#### ⚠️ 部署前必做
+
+**1. 数据库安全升级**
+
+在 Supabase SQL Editor 中执行 `supabase-add-uploader.sql`：
+```sql
+-- 添加上传者追踪和审核字段
+ALTER TABLE works ADD COLUMN uploaded_by TEXT;
+ALTER TABLE works ADD COLUMN uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE works ADD COLUMN is_approved BOOLEAN DEFAULT true;
+ALTER TABLE works ADD COLUMN admin_note TEXT;
+```
+
+**2. 启用 RLS 安全策略**
+
+执行 `supabase-production-rls.sql`（推荐用于生产）：
+```sql
+-- 启用所有表的 RLS
+ALTER TABLE works ENABLE ROW LEVEL SECURITY;
+ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE likes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE favorites ENABLE ROW LEVEL SECURITY;
+```
+
+**3. 配置管理员**
+
+在 Netlify/Vercel 环境变量中添加：
+```bash
+NEXT_PUBLIC_ADMIN_USERS=你的GitHub用户名,你的Linux.do用户名
+```
+
+#### 📋 完整检查清单
 
 - [ ] 已配置所有必需的环境变量
-- [ ] OAuth 回调地址已更新为生产域名
-- [ ] Supabase 数据库已初始化
-- [ ] 已在 `lib/admin.ts` 中配置管理员用户名
-- [ ] 检查 `.gitignore` 是否排除了敏感文件
+- [ ] OAuth 回调地址已更新为生产域名（HTTPS）
+- [ ] Supabase 数据库已初始化（`supabase-setup.sql`）
+- [ ] **已添加上传者追踪字段**（`supabase-add-uploader.sql`）⚠️
+- [ ] **已配置管理员用户名**（`NEXT_PUBLIC_ADMIN_USERS`）⚠️
+- [ ] 检查 `.gitignore` 是否排除了 `.env*` 文件
 - [ ] 环境变量中的密钥没有提交到代码库
-- [ ] （可选）生产环境启用 Supabase RLS
+- [ ] （推荐）生产环境启用 Supabase RLS
 - [ ] 测试所有核心功能是否正常
+
+#### 🛡️ 安全功能说明
+
+**上传者追踪** - 防止恶意上传
+- ✅ 自动记录 `uploaded_by`（用户名）
+- ✅ 管理后台显示上传者信息
+- ✅ 可以追踪到具体用户
+
+**内容审核** - 防止不当内容
+- ✅ 管理员可以隐藏作品
+- ✅ 被隐藏的作品不在首页显示
+- ✅ `is_approved` 字段控制
+
+**管理后台功能**
+- 📊 查看所有作品和上传者
+- 👁️ 隐藏/显示作品
+- ✏️ 编辑作品内容
+- 🗑️ 删除违规作品
+
+#### 🚨 遇到恶意攻击怎么办？
+
+1. **隐藏不当内容**
+   - 登录管理后台 `/admin`
+   - 找到问题作品
+   - 点击"隐藏"按钮
+
+2. **批量处理**
+   ```sql
+   -- 隐藏某个用户的所有作品
+   UPDATE works SET is_approved = false WHERE uploaded_by = '恶意用户名';
+   
+   -- 删除某个用户的所有作品
+   DELETE FROM works WHERE uploaded_by = '恶意用户名';
+   ```
+
+3. **临时关闭上传**
+   - 修改上传页面代码添加维护提示
+   - 或临时移除上传按钮
 
 ### Docker 部署
 
@@ -608,13 +678,29 @@ const CODE_ADMIN_USERS: string[] = [
 </details>
 
 <details>
-<summary><b>Q: 收藏功能报错怎么办？</b></summary>
+<summary><b>Q: 收藏功能报错 "null value in column id"？</b></summary>
 
-**A:** 确保：
-1. 已在 Supabase 执行收藏表创建 SQL
-2. 已禁用 `favorites` 表的 RLS
-3. 用户已登录
-4. 检查浏览器控制台的详细错误信息
+**A:** 这是 `favorites` 表创建不正确。解决方法：
+
+1. **删除并重建表**（在 Supabase SQL Editor 执行）：
+```sql
+DROP TABLE IF EXISTS favorites CASCADE;
+
+CREATE TABLE favorites (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  work_id UUID NOT NULL REFERENCES works(id) ON DELETE CASCADE,
+  user_name TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(work_id, user_name)
+);
+
+-- 开发环境禁用 RLS
+ALTER TABLE favorites DISABLE ROW LEVEL SECURITY;
+```
+
+2. **刷新页面重试**
+
+**关键**：`id UUID PRIMARY KEY DEFAULT uuid_generate_v4()` 这部分必须有，确保 id 自动生成。
 </details>
 
 ---
@@ -675,11 +761,32 @@ const CODE_ADMIN_USERS: string[] = [
 
 ### 安全建议
 
+#### 基础安全
 - 🔒 不要在代码中硬编码敏感信息（API密钥、密码等）
 - 🔒 使用环境变量管理配置
 - 🔒 定期更新依赖包修复安全漏洞
 - 🔒 生产环境启用 Supabase RLS
-- 🔒 配置适当的 CORS 和 CSP 策略
+- 🔒 配置 `.gitignore` 排除 `.env*` 文件
+
+#### 生产环境必做
+- ⚠️ 执行 `supabase-add-uploader.sql` 添加上传者追踪
+- ⚠️ 执行 `supabase-production-rls.sql` 启用 RLS
+- ⚠️ 配置 `NEXT_PUBLIC_ADMIN_USERS` 环境变量
+- ⚠️ OAuth 回调地址改为 HTTPS
+
+#### 已实现的安全防护
+- ✅ **XSS 防护**：OAuth 回调数据已转义
+- ✅ **文件大小限制**：前端限制 5MB
+- ✅ **上传者追踪**：记录谁上传了什么
+- ✅ **内容审核**：管理员可隐藏不当内容
+- ✅ **权限控制**：管理后台仅管理员可访问
+
+#### 建议添加（未来版本）
+- ⏳ 速率限制（防止刷屏）
+- ⏳ 敏感词过滤
+- ⏳ 用户黑名单
+- ⏳ 文件内容验证（服务端）
+- ⏳ 自动备份策略
 
 ---
 
@@ -694,7 +801,7 @@ const CODE_ADMIN_USERS: string[] = [
 - [Lucide Icons](https://lucide.dev/) - 优雅的图标库
 - [Recharts](https://recharts.org/) - 强大的图表库
 - [next-themes](https://github.com/pacocoursey/next-themes) - 主题切换解决方案
-- [Linux DO](https://linux.do/) - Linux 中文社区
+- [Linux DO](https://linux.do/) - 真诚、友善、团结、专业，共建你我引以为荣之社区。
 - [Netlify](https://www.netlify.com/) - 前端部署平台
 
 ---

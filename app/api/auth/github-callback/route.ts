@@ -85,16 +85,24 @@ export async function GET(request: NextRequest) {
     }
 
     // 4. 创建 HTML 页面，将用户信息传递给客户端
+    // 安全处理：转义用户数据防止 XSS 攻击
+    const safeUserData = JSON.stringify(user)
+      .replace(/</g, '\\u003c')
+      .replace(/>/g, '\\u003e')
+      .replace(/&/g, '\\u0026')
+    const safeToken = tokenData.access_token.replace(/'/g, "\\'")
+    
     const html = `
       <!DOCTYPE html>
       <html>
       <head>
         <title>登录成功</title>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline';">
       </head>
       <body>
         <script>
-          const user = ${JSON.stringify(user)};
-          const token = '${tokenData.access_token}';
+          const user = ${safeUserData};
+          const token = '${safeToken}';
           
           // 保存到 localStorage
           localStorage.setItem('linuxdo_user', JSON.stringify(user));

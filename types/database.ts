@@ -20,6 +20,10 @@ export interface Database {
           thumbnail: string | null
           tags: string[] | null
           author: string | null
+          uploaded_by: string | null
+          uploaded_at: string | null
+          is_approved: boolean
+          admin_note: string | null
           views: number
           likes: number
           created_at: string
@@ -34,6 +38,10 @@ export interface Database {
           thumbnail?: string | null
           tags?: string[] | null
           author?: string | null
+          uploaded_by?: string | null
+          uploaded_at?: string | null
+          is_approved?: boolean
+          admin_note?: string | null
           views?: number
           likes?: number
           created_at?: string
@@ -48,6 +56,10 @@ export interface Database {
           thumbnail?: string | null
           tags?: string[] | null
           author?: string | null
+          uploaded_by?: string | null
+          uploaded_at?: string | null
+          is_approved?: boolean
+          admin_note?: string | null
           views?: number
           likes?: number
           created_at?: string
