@@ -11,6 +11,32 @@
 
 ---
 
+## 📑 目录导航
+
+- [📜 名字寓意](#-名字寓意)
+- [📸 预览截图](#-预览截图)
+- [✨ 核心特色](#-核心特色)
+- [🎯 完整功能列表](#-完整功能列表)
+- [🚀 快速开始](#-快速开始)
+- [⚙️ 环境变量配置](#️-环境变量配置)
+- [🗄️ 数据库设置](#️-数据库设置)
+- [🔐 OAuth 登录配置](#-oauth-登录配置)
+- [📊 权限说明](#-权限说明)
+- [📝 使用指南](#-使用指南)
+- [🚀 部署指南](#-部署指南)
+- [📂 项目结构](#-项目结构)
+- [🎨 技术栈](#-技术栈)
+- [💡 设计理念](#-设计理念)
+- [🐛 常见问题](#-常见问题)
+- [🤝 贡献指南](#-贡献指南)
+- [📄 开源协议](#-开源协议)
+- [🙏 致谢](#-致谢)
+- [🎯 路线图](#-路线图)
+- [📊 项目统计](#-项目统计)
+- [📞 联系方式](#-联系方式)
+
+---
+
 ## 📜 名字寓意
 
 **撷芳集** - 采撷芬芳，汇集佳作
@@ -21,6 +47,69 @@
 - 🎨 **纳华** - 容纳华美，包罗万象
 
 > 采撷芬芳如花的优秀作品，拾取翠玉般的精品创作，汇集成珍贵的作品集，容纳一切华美的 AI 艺术。
+
+---
+
+## 📸 预览截图
+
+### 🏠 首页展示
+
+#### 作品展示页面
+![首页-作品展示](screenshots/首页-作品展示.png)
+
+*优雅的卡片式布局，实时 HTML 预览，毛玻璃效果*
+
+#### 页头导航
+<table>
+  <tr>
+    <td width="50%">
+      <img src="screenshots/首页-页头.png" alt="浅色模式">
+      <p align="center"><b>浅色模式</b> - 简洁清爽的界面</p>
+    </td>
+    <td width="50%">
+      <img src="screenshots/首页-页头-深色模式.png" alt="深色模式">
+      <p align="center"><b>深色模式</b> - 优雅的深色主题</p>
+    </td>
+  </tr>
+</table>
+
+#### 统计数据展示
+![首页-页脚](screenshots/首页-页脚.png)
+
+*数据可视化图表：热门标签分布、月度趋势、TOP 10 作品排行*
+
+#### 空状态提示
+![首页-空作品](screenshots/首页-空作品.png)
+
+*友好的空状态提示，引导用户上传作品*
+
+---
+
+### 📝 作品详情
+
+#### 作品详情与评论
+![作品详情与评论评分页](screenshots/作品详情与评论评分页.png)
+
+*完整的作品信息、5 星评分、智能评论系统*
+
+#### 全屏预览
+![作品全屏预览页](screenshots/作品全屏预览页.png)
+
+*全屏沉浸式预览，代码语法高亮，一键复制下载*
+
+---
+
+### ✨ 功能页面
+
+#### 上传作品
+![上传作品页](screenshots/上传作品页.png)
+
+*支持 HTML/SVG 代码粘贴上传，智能标签选择器*
+
+#### 我的收藏
+![收藏页](screenshots/收藏页.png)
+
+*个人收藏列表，一键管理喜爱的作品*
 
 ---
 
@@ -542,7 +631,7 @@ gemini3-xiefang-collection/
 │   │   └── auth/           # OAuth 回调
 │   │       ├── callback/   # Linux.do 回调
 │   │       └── github-callback/ # GitHub 回调
-│   ├── admin/              # 🆕 管理员后台
+│   ├── admin/              #  管理员后台
 │   ├── upload/             # 上传页面
 │   ├── works/              # 作品详情页
 │   ├── layout.tsx          # 全局布局
@@ -550,32 +639,32 @@ gemini3-xiefang-collection/
 │   └── globals.css         # 全局样式
 ├── components/              # React 组件
 │   ├── ui/                 # UI 基础组件
-│   ├── advanced-search.tsx # 🆕 高级搜索
+│   ├── advanced-search.tsx #  高级搜索
 │   ├── back-to-top.tsx     # 回到顶部
 │   ├── comment-section.tsx # 评论组件
-│   ├── favorite-button.tsx # 🆕 收藏按钮
-│   ├── footer-stats.tsx    # 🆕 Footer 统计数据
+│   ├── favorite-button.tsx #  收藏按钮
+│   ├── footer-stats.tsx    #  Footer 统计数据
 │   ├── header.tsx          # 导航栏
 │   ├── like-button.tsx     # 点赞按钮
 │   ├── login-button.tsx    # 登录按钮
-│   ├── theme-toggle.tsx    # 🆕 主题切换
-│   ├── theme-provider.tsx  # 🆕 主题提供器
-│   ├── stats-dashboard.tsx # 🆕 统计图表
+│   ├── theme-toggle.tsx    #  主题切换
+│   ├── theme-provider.tsx  #  主题提供器
+│   ├── stats-dashboard.tsx #  统计图表
 │   ├── source-code-viewer.tsx # 源码查看器
 │   ├── upload-form.tsx     # 上传表单
 │   ├── work-card.tsx       # 作品卡片
 │   └── work-grid.tsx       # 作品网格
 ├── lib/                     # 工具函数
-│   ├── admin.ts            # 🆕 管理员权限（支持环境变量）
+│   ├── admin.ts            #  管理员权限（支持环境变量）
 │   ├── auth.ts             # 认证逻辑
 │   ├── supabase.ts         # Supabase 客户端
 │   └── utils.ts            # 通用工具
 ├── types/                   # TypeScript 类型
 │   └── database.ts         # 数据库类型（含 favorites）
 ├── supabase-setup.sql      # 数据库初始化脚本
-├── supabase-add-uploader.sql # 🆕 上传者追踪字段
-├── supabase-production-rls.sql # 🆕 生产环境 RLS 策略
-├── supabase-storage-setup.sql # 🆕 Storage 权限配置
+├── supabase-add-uploader.sql #  上传者追踪字段
+├── supabase-production-rls.sql #  生产环境 RLS 策略
+├── supabase-storage-setup.sql #  Storage 权限配置
 ├── netlify.toml            # Netlify 配置
 ├── env.example             # 环境变量配置模板
 ├── Dockerfile              # Docker 配置
@@ -884,12 +973,12 @@ ON CONFLICT DO NOTHING;
 - [x] 回到顶部
 - [x] 评论分页
 
-### 最新功能 ✅ (v3.2.0)
+### 最新功能 ✅ (v1.2.0)
 - [x] **用户个人主页** - 查看用户作品和统计数据
 - [x] **作品收藏功能** - 收藏喜欢的作品，创建个人收藏集
 - [x] **高级搜索** - 多条件组合搜索，精准查找作品
 
-### 核心功能 ✅ (v3.1.0)
+### 核心功能 ✅ (v1.1.0)
 - [x] **深色模式** - 优雅的深色主题，一键切换，完美适配
 - [x] **统计图表** - 数据可视化，热门标签、月度趋势、TOP 10 作品
 - [x] **管理员后台** - 作品管理、数据监控、完整编辑功能
@@ -905,7 +994,7 @@ ON CONFLICT DO NOTHING;
 
 ## 📊 项目统计
 
-- **版本**：v3.2.0
+- **版本**：v1.2.0
 - **功能数量**：50+ 个核心功能
 - **页面路由**：9 个（含用户主页、收藏页）
 - **组件数量**：25+ 个
@@ -928,14 +1017,6 @@ ON CONFLICT DO NOTHING;
 如果这个项目对你有帮助，请给个 Star ⭐
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Jasonliu-0/gemini3-xiefang-collection&type=Date)](https://star-history.com/#Jasonliu-0/gemini3-xiefang-collection&Date)
-
----
-
-## 📸 预览截图
-
-> 截图展示最新功能和界面设计
-
-（可在部署后添加实际截图）
 
 ---
 
