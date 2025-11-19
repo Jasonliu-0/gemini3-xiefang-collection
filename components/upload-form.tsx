@@ -53,29 +53,54 @@ export function UploadForm() {
 
       if (data) {
         setIsEditing(true)
-        setFormData({
-          title: data.title || '',
-          description: data.description || '',
-          url: data.url || '',
-          sourceCodeUrl: data.source_code_url || '',
-          author: data.author || '',
-        })
-        setSelectedTags(data.tags || [])
         
-        // 如果有 HTML 代码，提取并显示
-        if (data.source_code_url && data.source_code_url.startsWith('data:text/html')) {
+        // 检查 source_code_url 是否是 base64 编码的代码
+        const isDataUrl = data.source_code_url && data.source_code_url.startsWith('data:')
+        
+        if (isDataUrl) {
+          // 是 data URL（粘贴代码方式上传的）
           try {
             const cleanUrl = data.source_code_url.includes('[CODE-')
               ? data.source_code_url.substring(data.source_code_url.indexOf('data:'))
               : data.source_code_url
             const base64Data = cleanUrl.split(',')[1]
             const decodedCode = decodeURIComponent(escape(atob(base64Data)))
+            
+            // 设置到粘贴代码区域
             setSourceCodeText(decodedCode)
             setSourceCodeType('code')
+            
+            // sourceCodeUrl 应该显示外部链接（source_repo_url），而不是 base64
+            setFormData({
+              title: data.title || '',
+              description: data.description || '',
+              url: data.url || '',
+              sourceCodeUrl: data.source_repo_url || '', // 使用 source_repo_url
+              author: data.author || '',
+            })
           } catch (err) {
             console.error('解码失败:', err)
+            setFormData({
+              title: data.title || '',
+              description: data.description || '',
+              url: data.url || '',
+              sourceCodeUrl: data.source_repo_url || '',
+              author: data.author || '',
+            })
           }
+        } else {
+          // 不是 data URL（文件上传或外部链接）
+          setFormData({
+            title: data.title || '',
+            description: data.description || '',
+            url: data.url || '',
+            sourceCodeUrl: data.source_code_url || '',
+            author: data.author || '',
+          })
+          setSourceCodeType('file')
         }
+        
+        setSelectedTags(data.tags || [])
       }
     } catch (error) {
       console.error('加载作品数据失败:', error)
