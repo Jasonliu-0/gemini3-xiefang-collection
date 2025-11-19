@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { Inter, Noto_Serif_SC, Ma_Shan_Zheng } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/header'
+import { FooterStats } from '@/components/footer-stats'
 import { Sparkles } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import { BackToTopButton } from '@/components/back-to-top'
 import { ThemeProvider } from '@/components/theme-provider'
 
@@ -31,21 +31,11 @@ export const metadata: Metadata = {
   description: '撷芳拾翠，集珍纳华 - 发现并珍藏通过 Gemini 3.0 创作的优秀 AI 作品',
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const { data: worksData } = await supabase
-    .from('works')
-    .select('views, likes')
-
-  const totalWorks = worksData?.length ?? 0
-  const totalViews =
-    worksData?.reduce((sum, w) => sum + ((w as { views?: number }).views ?? 0), 0) ?? 0
-  const totalLikes =
-    worksData?.reduce((sum, w) => sum + ((w as { likes?: number }).likes ?? 0), 0) ?? 0
-
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body
@@ -66,37 +56,8 @@ export default async function RootLayout({
         <footer className="bg-white/40 dark:bg-gray-900/40 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-t border-white/40 dark:border-gray-700/40 py-6 md:py-8 mt-8 md:mt-10 shadow-lg transition-colors">
           <div className="container px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
-              {/* 左侧：创作数据概览 */}
-              <div className="flex justify-center md:justify-start">
-                <div className="w-full max-w-sm rounded-2xl bg-white/80 dark:bg-gray-800/80 border border-sky-100 dark:border-sky-900/50 shadow-md px-5 md:px-6 py-4 md:py-5 text-left space-y-3 md:space-y-4">
-                  <p className="text-xs font-semibold tracking-[0.2em] text-sky-600 dark:text-sky-400 uppercase">
-                    数据一瞥
-                  </p>
-                  <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 font-serif">
-                    用数字记录每一次灵感的闪光。
-                  </p>
-                  <div className="grid grid-cols-3 gap-3 md:gap-4 text-sm font-serif">
-                    <div>
-                      <p className="text-base md:text-xl font-bold text-gray-900 dark:text-gray-100">
-                        {totalWorks}
-                      </p>
-                      <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 mt-1">作品收录</p>
-                    </div>
-                    <div>
-                      <p className="text-base md:text-xl font-bold text-gray-900 dark:text-gray-100">
-                        {totalViews.toLocaleString('zh-CN')}
-                      </p>
-                      <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 mt-1">累计浏览</p>
-                    </div>
-                    <div>
-                      <p className="text-base md:text-xl font-bold text-gray-900 dark:text-gray-100">
-                        {totalLikes.toLocaleString('zh-CN')}
-                      </p>
-                      <p className="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 mt-1">获得点赞</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              {/* 左侧：创作数据概览（使用客户端组件） */}
+              <FooterStats />
 
               {/* 中间：品牌介绍和导航 */}
               <div className="flex flex-col items-center justify-center gap-2 md:gap-3 text-center">
