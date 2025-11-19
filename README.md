@@ -249,12 +249,29 @@ NEXT_PUBLIC_GITHUB_REDIRECT_URI=http://localhost:3000/api/auth/github-callback
 
 ### 2. 运行初始化脚本
 
-在 Supabase 控制台的 **SQL Editor** 中运行 `supabase-setup.sql`。
+在 Supabase 控制台的 **SQL Editor** 中按顺序执行：
 
-### 3. 禁用行级安全策略（推荐用于开发）
+#### ① 基础表结构
+```sql
+-- 执行 supabase-setup.sql（创建表和基础结构）
+```
 
-为了简化开发，建议禁用所有表的 RLS：
+#### ② 上传者追踪（必需）
+```sql
+-- 执行 supabase-add-uploader.sql（添加追踪字段）
+ALTER TABLE works ADD COLUMN IF NOT EXISTS uploaded_by TEXT;
+ALTER TABLE works ADD COLUMN IF NOT EXISTS uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW();
+ALTER TABLE works ADD COLUMN IF NOT EXISTS is_approved BOOLEAN DEFAULT true;
+ALTER TABLE works ADD COLUMN IF NOT EXISTS admin_note TEXT;
+```
 
+#### ③ Storage 权限（必需）
+```sql
+-- 执行 supabase-storage-setup.sql（配置文件上传权限）
+-- 允许上传缩略图和源码文件
+```
+
+#### ④ 禁用 RLS（开发环境）
 ```sql
 ALTER TABLE works DISABLE ROW LEVEL SECURITY;
 ALTER TABLE comments DISABLE ROW LEVEL SECURITY;
@@ -262,10 +279,26 @@ ALTER TABLE likes DISABLE ROW LEVEL SECURITY;
 ALTER TABLE favorites DISABLE ROW LEVEL SECURITY;
 ```
 
-> ⚠️ **安全提示**：
-> - 开发环境可以禁用 RLS 以简化调试
-> - 生产环境建议启用 RLS 并正确配置策略
-> - 或者使用 Supabase 的 Service Role Key（仅限服务端）
+### 3. 创建 Storage 存储桶
+
+在 Supabase **Storage** 界面创建两个存储桶：
+
+1. **thumbnails**（缩略图）
+   - Public: ✅ 勾选
+   - File size limit: 5MB
+   - Allowed MIME types: `image/*`
+
+2. **source-code**（源码文件）
+   - Public: ✅ 勾选
+   - File size limit: 50MB
+   - 留空（允许所有类型）
+
+然后执行 `supabase-storage-setup.sql` 配置权限。
+
+> ⚠️ **重要**：
+> - 必须配置 Storage 权限，否则上传功能会报错
+> - 开发环境可以禁用 RLS 简化调试
+> - 生产环境建议执行 `supabase-production-rls.sql` 启用安全策略
 
 ---
 
@@ -517,8 +550,11 @@ gemini3-xiefang-collection/
 │   └── globals.css         # 全局样式
 ├── components/              # React 组件
 │   ├── ui/                 # UI 基础组件
+│   ├── advanced-search.tsx # 🆕 高级搜索
 │   ├── back-to-top.tsx     # 回到顶部
 │   ├── comment-section.tsx # 评论组件
+│   ├── favorite-button.tsx # 🆕 收藏按钮
+│   ├── footer-stats.tsx    # 🆕 Footer 统计数据
 │   ├── header.tsx          # 导航栏
 │   ├── like-button.tsx     # 点赞按钮
 │   ├── login-button.tsx    # 登录按钮
@@ -530,14 +566,18 @@ gemini3-xiefang-collection/
 │   ├── work-card.tsx       # 作品卡片
 │   └── work-grid.tsx       # 作品网格
 ├── lib/                     # 工具函数
-│   ├── admin.ts            # 🆕 管理员权限
+│   ├── admin.ts            # 🆕 管理员权限（支持环境变量）
 │   ├── auth.ts             # 认证逻辑
 │   ├── supabase.ts         # Supabase 客户端
 │   └── utils.ts            # 通用工具
 ├── types/                   # TypeScript 类型
-│   └── database.ts         # 数据库类型
+│   └── database.ts         # 数据库类型（含 favorites）
 ├── supabase-setup.sql      # 数据库初始化脚本
-├── netlify.toml            # 🆕 Netlify 配置
+├── supabase-add-uploader.sql # 🆕 上传者追踪字段
+├── supabase-production-rls.sql # 🆕 生产环境 RLS 策略
+├── supabase-storage-setup.sql # 🆕 Storage 权限配置
+├── netlify.toml            # Netlify 配置
+├── env.example             # 环境变量配置模板
 ├── Dockerfile              # Docker 配置
 ├── docker-compose.yml      # Docker Compose 配置
 ├── package.json            # 依赖配置
@@ -703,6 +743,31 @@ ALTER TABLE favorites DISABLE ROW LEVEL SECURITY;
 **关键**：`id UUID PRIMARY KEY DEFAULT uuid_generate_v4()` 这部分必须有，确保 id 自动生成。
 </details>
 
+<details>
+<summary><b>Q: 缩略图上传失败，提示 "row-level security policy"？</b></summary>
+
+**A:** 这是 Supabase Storage 权限未配置。解决方法：
+
+1. **确保存储桶已创建**（Storage → 查看是否有 `thumbnails` 和 `source-code`）
+
+2. **执行权限配置 SQL**（在 SQL Editor 中）：
+```sql
+-- 执行 supabase-storage-setup.sql
+-- 或直接复制以下内容：
+INSERT INTO storage.policies (name, bucket_id, definition, check)
+VALUES ('Allow public uploads to thumbnails', 'thumbnails', 'true', 'true')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO storage.policies (name, bucket_id, definition)
+VALUES ('Allow public reads from thumbnails', 'thumbnails', 'true')
+ON CONFLICT DO NOTHING;
+```
+
+3. **刷新页面重新上传**
+
+**提示**：粘贴代码方式不需要 Storage，推荐使用！
+</details>
+
 ---
 
 ## 🤝 贡献指南
@@ -841,9 +906,11 @@ ALTER TABLE favorites DISABLE ROW LEVEL SECURITY;
 ## 📊 项目统计
 
 - **版本**：v3.2.0
-- **功能数量**：45+ 个核心功能
-- **技术栈**：12+ 个主流技术
-- **新增功能**：深色模式、统计图表、多语言、管理后台
+- **功能数量**：50+ 个核心功能
+- **页面路由**：9 个（含用户主页、收藏页）
+- **组件数量**：25+ 个
+- **SQL 脚本**：4 个（初始化、追踪、RLS、Storage）
+- **安全防护**：上传者追踪、内容审核、XSS 防护
 - **开发周期**：持续更新中
 
 ---
