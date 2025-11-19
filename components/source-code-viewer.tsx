@@ -68,7 +68,48 @@ export function SourceCodeViewer({
         try {
           const base64Data = cleanSourceUrl.split(',')[1]
           const htmlContent = decodeURIComponent(escape(atob(base64Data)))
-          newWindow.document.write(htmlContent)
+          
+          // 添加返回按钮的增强 HTML
+          const enhancedHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作品预览 - Gemini 3.0 撷芳集</title>
+  <style>
+    body { margin: 0; padding: 0; }
+    #back-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 999999;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    #back-button:hover {
+      background: rgba(0, 0, 0, 0.9);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+  <button id="back-button" onclick="window.close()">✕ 关闭预览</button>
+  ${htmlContent}
+</body>
+</html>
+          `
+          
+          newWindow.document.write(enhancedHtml)
           newWindow.document.close()
         } catch (error) {
           console.error('Failed to open fullscreen:', error)

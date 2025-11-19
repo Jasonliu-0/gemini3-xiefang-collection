@@ -254,6 +254,14 @@ export default function AdminPage() {
                         title={work.title}
                         style={{ width: '200%', height: '200%' }}
                       />
+                    ) : work.url ? (
+                      <iframe
+                        src={work.url}
+                        className="w-full h-full pointer-events-none scale-50 origin-top-left"
+                        sandbox="allow-scripts allow-same-origin"
+                        title={work.title}
+                        style={{ width: '200%', height: '200%' }}
+                      />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500 text-xs">
                         无预览
