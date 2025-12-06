@@ -61,3 +61,5 @@ pids
 *.pid
 *.seed
 *.pid.lock
+.spec-workflow
+推广.md
