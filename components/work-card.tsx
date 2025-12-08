@@ -2,18 +2,21 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Eye, Heart } from 'lucide-react'
+import { OptimizedImage } from '@/components/ui/optimized-image'
+import { Eye, Heart, Sparkles } from 'lucide-react'
 import { Work } from '@/types/database'
 import { formatNumber, formatDate } from '@/lib/utils'
-import { memo } from 'react'
+import { memo, useState } from 'react'
 
 interface WorkCardProps {
   work: Work
 }
 
 export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
+  const [isHovered, setIsHovered] = useState(false)
+  
   // 兼容旧格式：[CODE-HTML]-data:... 和新格式：data:...
-  const cleanSourceUrl = work.source_code_url && work.source_code_url.includes('[CODE-') 
+  const cleanSourceUrl = work.source_code_url && work.source_code_url.includes('[CODE-')
     ? work.source_code_url.substring(work.source_code_url.indexOf('data:'))
     : work.source_code_url
   
@@ -21,12 +24,19 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
   const hasCodePreview = cleanSourceUrl && cleanSourceUrl.startsWith('data:')
   const isHtmlCode = hasCodePreview && cleanSourceUrl.includes('data:text/html')
   
-  // 安全解码 HTML 内容
+  // 安全解码 HTML 内容并清理 localhost 引用
   const getHtmlContent = () => {
     if (!isHtmlCode || !cleanSourceUrl) return ''
     try {
       const base64Data = cleanSourceUrl.split(',')[1]
-      return decodeURIComponent(escape(atob(base64Data)))
+      let html = decodeURIComponent(escape(atob(base64Data)))
+      
+      // 简单粗暴：移除所有包含 localhost 的行
+      html = html.split('\n')
+        .filter(line => !line.includes('localhost'))
+        .join('\n')
+      
+      return html
     } catch (error) {
       console.error('Failed to decode HTML:', error)
       return ''
@@ -37,29 +47,30 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
 
   return (
     <Link href={`/works/${work.id}`}>
-      <Card className="glass-card group overflow-hidden relative transform-gpu bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800">
+      <Card
+        className="glass-card group overflow-hidden relative transform-gpu bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 to-gray-50 dark:from-gray-800 dark:to-gray-700 group-hover:from-blue-100 group-hover:to-gray-100 dark:group-hover:from-gray-700 dark:group-hover:to-gray-600 transition-all duration-300">
           {/* 装饰性渐变层 */}
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/5 to-transparent"></div>
           {work.thumbnail ? (
-            <Image
+            <OptimizedImage
               src={work.thumbnail}
               alt={work.title}
               fill
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-              loading="lazy"
-              placeholder="blur"
-              blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNlNWU3ZWIiLz48L3N2Zz4="
+              priority={false}
             />
-          ) : htmlContent ? (
+          ) : isHovered && htmlContent ? (
             <iframe
               srcDoc={htmlContent}
               className="w-full h-full pointer-events-none"
-              sandbox="allow-scripts"
+              sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
               title={work.title}
             />
-          ) : work.url ? (
+          ) : isHovered && work.url && work.url.startsWith('https://') ? (
             <iframe
               src={work.url}
               className="w-full h-full pointer-events-none"
@@ -67,8 +78,9 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
               title={work.title}
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
-              暂无预览
+            <div className="flex flex-col h-full items-center justify-center text-gray-500 dark:text-gray-400 gap-2 px-4">
+              <Sparkles className="h-12 w-12 opacity-50" />
+              <span className="text-sm text-center">悬停预览 / 点击查看</span>
             </div>
           )}
         </div>
@@ -117,13 +129,16 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
           </div>
           {work.author && (
             <div className="w-full">
-              <Link 
-                href={`/user/${encodeURIComponent(work.author)}`}
-                className="text-[10px] md:text-xs text-blue-600 dark:text-blue-400 hover:underline font-serif"
-                onClick={(e) => e.stopPropagation()}
+              <span
+                className="text-[10px] md:text-xs text-blue-600 dark:text-blue-400 font-serif cursor-pointer hover:underline"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  window.location.href = `/user/${encodeURIComponent(work.author!)}`
+                }}
               >
                 作者：{work.author}
-              </Link>
+              </span>
             </div>
           )}
         </CardFooter>

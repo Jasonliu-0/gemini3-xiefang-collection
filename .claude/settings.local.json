@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install critters --save-dev)",
+      "WebFetch(domain:)",
+      "mcp__chrome-mcp__chrome_navigate",
+      "mcp__chrome-mcp__chrome_get_web_content",
+      "mcp__chrome-mcp__chrome_screenshot"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

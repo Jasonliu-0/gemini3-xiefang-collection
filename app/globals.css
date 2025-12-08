@@ -61,7 +61,7 @@
   
   body {
     @apply bg-background text-foreground;
-    /* 淡雅水墨风背景 */
+    /* 淡雅水墨风背�?*/
     background: 
       linear-gradient(
         135deg,
@@ -100,11 +100,11 @@
     right: 0;
     bottom: 0;
     background-image: 
-      /* 淡雅墨迹：改为青绿水色晕染 */
+      /* 淡雅墨迹：改为青绿水色晕�?*/
       radial-gradient(ellipse 900px 500px at 30% 20%, rgba(56, 189, 248, 0.04) 0%, transparent 70%),
       radial-gradient(ellipse 800px 450px at 70% 60%, rgba(45, 212, 191, 0.03) 0%, transparent 65%),
       radial-gradient(ellipse 700px 400px at 50% 80%, rgba(37, 99, 235, 0.03) 0%, transparent 60%),
-      /* 纸纹理 */
+      /* 纸纹�?*/
       repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.005) 2px, rgba(0,0,0,0.005) 4px);
     pointer-events: none;
     z-index: 0;
@@ -177,7 +177,7 @@
   background-size: 1000px 100%;
 }
 
-/* 超强毛玻璃效果 */
+/* 超强毛玻璃效�?*/
 .glass {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(40px) saturate(200%) brightness(110%);
@@ -238,7 +238,7 @@
   transition: all 0.3s ease;
 }
 
-/* 首页标题区文字效果 */
+/* 首页标题区文字效�?*/
 .hero-subtitle {
   text-shadow: 0 4px 18px rgba(15, 23, 42, 0.95);
 }
@@ -264,18 +264,30 @@
   animation: caret-blink 1s steps(1, end) infinite;
 }
 
-/* 首页专用：风景背景 + 毛玻璃主题容器 */
+/* 首页专用：风景背�?+ 毛玻璃主题容�?*/
 .home-hero-bg {
   min-height: calc(100vh - 4rem);
   padding: 4rem 0;
   background-size: cover;
-  background-position: center;
+  background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
   transition: background-image 1s ease-in-out;
+  /* 确保背景图片完全覆盖容器 */
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
 }
 
-/* 多张公路 / 阳光背景，用于轮播 */
+/* 移动端优化：使用 scroll 而不�?fixed，提升性能 */
+@media (max-width: 768px) {
+  .home-hero-bg {
+    background-attachment: scroll;
+    min-height: auto;
+  }
+}
+
+/* 多张公路 / 阳光背景，用于轮�?- 桌面版（1920px�?*/
 .home-hero-bg-0 {
   background-image:
     linear-gradient(
@@ -284,7 +296,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-1 {
@@ -295,7 +307,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-2 {
@@ -306,7 +318,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-3 {
@@ -317,7 +329,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-4 {
@@ -328,7 +340,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-5 {
@@ -339,7 +351,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-6 {
@@ -350,7 +362,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-7 {
@@ -361,7 +373,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-8 {
@@ -372,7 +384,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-9 {
@@ -383,7 +395,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-10 {
@@ -394,7 +406,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
 }
 
 .home-hero-bg-11 {
@@ -405,7 +417,55 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=1200&q=80');
+}
+
+/* 移动端响应式背景图片 - 平板设备�?200px�?*/
+@media (max-width: 1200px) {
+  .home-hero-bg-0 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-1 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-2 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-3 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-4 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-5 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-6 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-7 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-8 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-9 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-10 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+  .home-hero-bg-11 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=1200'); }
+}
+
+/* 移动端响应式背景图片 - 手机设备�?00px�?*/
+@media (max-width: 768px) {
+  .home-hero-bg-0 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-1 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-2 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-3 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-4 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-5 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-6 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-7 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-8 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-9 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-10 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+  .home-hero-bg-11 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=800'); }
+}
+
+/* 移动端响应式背景图片 - 小屏手机�?40px�?*/
+@media (max-width: 480px) {
+  .home-hero-bg-0 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-1 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-2 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-3 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-4 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-5 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-6 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-7 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-8 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-9 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-10 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=640'); }
+  .home-hero-bg-11 { background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.2), rgba(248, 250, 252, 0.18)), url('https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=640'); }
 }
 
 .home-hero-shell {

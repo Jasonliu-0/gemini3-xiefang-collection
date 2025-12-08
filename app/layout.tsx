@@ -7,6 +7,7 @@ import { FooterStats } from '@/components/footer-stats'
 import { Sparkles } from 'lucide-react'
 import { BackToTopButton } from '@/components/back-to-top'
 import { ThemeProvider } from '@/components/theme-provider'
+import { PerformanceMonitor } from '@/components/performance-monitor'
 
 const inter = Inter({ subsets: ['latin'] })
 const notoSerifSC = Noto_Serif_SC({ 
@@ -48,6 +49,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <PerformanceMonitor />
           <Header />
           <main className="min-h-screen">
             {children}

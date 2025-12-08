@@ -1,11 +1,12 @@
 import { Work } from '@/types/database'
 import { WorkCard } from './work-card'
+import { memo } from 'react'
 
 interface WorkGridProps {
   works: Work[]
 }
 
-export function WorkGrid({ works }: WorkGridProps) {
+export const WorkGrid = memo(function WorkGrid({ works }: WorkGridProps) {
   if (works.length === 0) {
     return (
       <div className="text-center py-12">
@@ -21,5 +22,5 @@ export function WorkGrid({ works }: WorkGridProps) {
       ))}
     </div>
   )
-}
+})
 

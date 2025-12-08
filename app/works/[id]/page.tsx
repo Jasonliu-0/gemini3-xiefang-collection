@@ -3,15 +3,17 @@ import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { CommentSection } from '@/components/comment-section'
 import { SourceCodeViewer } from '@/components/source-code-viewer'
 import { LikeButton } from '@/components/like-button'
 import { FavoriteButton } from '@/components/favorite-button'
+import { ViewTracker } from '@/components/view-tracker'
 import { Eye, Heart, Calendar, User } from 'lucide-react'
 import { formatDate, formatNumber } from '@/lib/utils'
 import { Work } from '@/types/database'
 
-export const revalidate = 0
+export const revalidate = 60 // 缓存 60 秒
 
 async function getWork(id: string): Promise<Work | null> {
   const { data, error } = await supabase
@@ -24,18 +26,7 @@ async function getWork(id: string): Promise<Work | null> {
     return null
   }
 
-  // 类型断言
-  const work = data as Work
-
-  // 增加浏览量
-  const currentViews = work.views || 0
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  await (supabase as any)
-    .from('works')
-    .update({ views: currentViews + 1 })
-    .eq('id', id)
-
-  return work
+  return data as Work
 }
 
 async function getComments(workId: string) {
@@ -68,6 +59,9 @@ export default async function WorkDetailPage({
 
   return (
     <div className="container py-8 max-w-5xl">
+      {/* 浏览量跟踪 */}
+      <ViewTracker workId={params.id} />
+
       {/* 作品头部 */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-4">{work.title}</h1>
@@ -108,12 +102,13 @@ export default async function WorkDetailPage({
       {work.thumbnail && (
         <div className="mb-8 rounded-lg overflow-hidden border">
           <div className="relative aspect-video w-full">
-            <Image
+            <OptimizedImage
               src={work.thumbnail}
               alt={work.title}
               fill
               className="object-cover"
-              priority
+              priority={true}
+              sizes="(max-width: 1200px) 100vw, 1200px"
             />
           </div>
         </div>

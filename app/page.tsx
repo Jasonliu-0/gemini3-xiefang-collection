@@ -1,16 +1,52 @@
 'use client'
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import dynamic from 'next/dynamic'
 import { supabase } from '@/lib/supabase'
-import { WorkGrid } from '@/components/work-grid'
-import { StatsDashboard } from '@/components/stats-dashboard'
-import { AdvancedSearch, SearchFilters } from '@/components/advanced-search'
+import { InfiniteWorkGrid } from '@/components/infinite-work-grid'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { Search, TrendingUp, Eye, Heart, Sparkles, Upload } from 'lucide-react'
 import { Work } from '@/types/database'
+import { useInfiniteScroll } from '@/hooks/use-infinite-scroll'
+
+// 动态导入大型组件以实现代码分割
+const StatsDashboard = dynamic(
+  () => import('@/components/stats-dashboard').then(mod => ({ default: mod.StatsDashboard })),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600 dark:text-gray-400">加载统计数据中...</span>
+      </div>
+    ),
+    ssr: false // 在客户端加载
+  }
+)
+
+const AdvancedSearch = dynamic(
+  () => import('@/components/advanced-search').then(mod => ({ default: mod.AdvancedSearch })),
+  {
+    loading: () => (
+      <div className="flex items-center justify-center py-4">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
+        <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">加载搜索功能中...</span>
+      </div>
+    ),
+    ssr: false
+  }
+)
+
+// 类型定义
+interface SearchFilters {
+  keyword: string
+  author: string
+  tags: string[]
+  minViews: number
+  minLikes: number
+}
 
 const HERO_BG_CLASSES = [
   'home-hero-bg-0',
@@ -34,7 +70,6 @@ const SUBTITLE_TEXTS = [
 ]
 
 export default function HomePage() {
-  const [works, setWorks] = useState<Work[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTag, setSelectedTag] = useState<string | null>(null)
   const [sortBy, setSortBy] = useState<'latest' | 'views' | 'likes'>('latest')
@@ -45,13 +80,31 @@ export default function HomePage() {
   const [authError, setAuthError] = useState<string | null>(null)
   const [advancedFilters, setAdvancedFilters] = useState<SearchFilters | null>(null)
 
-  // 首页背景轮播：几张公路 / 阳光风景之间自动切换
+  // 无限滚动 Hook
+  const {
+    works,
+    loading,
+    hasMore,
+    error,
+    loadMore,
+    totalCount
+  } = useInfiniteScroll({
+    initialLimit: 24,
+    pageSize: 24,
+    filters: {
+      search: advancedFilters?.keyword || searchQuery,
+      tag: advancedFilters?.tags?.[0] || selectedTag,
+      sortBy
+    }
+  })
+
+  // 首页背景轮播：5分钟切换一张
   useEffect(() => {
     if (HERO_BG_CLASSES.length <= 1) return
 
     const interval = setInterval(() => {
       setBgIndex((prev) => (prev + 1) % HERO_BG_CLASSES.length)
-    }, 12000) // 每 12 秒切换一张
+    }, 300000) // 5分钟 = 300秒 = 300000毫秒
 
     return () => clearInterval(interval)
   }, [])
@@ -115,27 +168,11 @@ export default function HomePage() {
     }
   }, [])
 
-  const loadWorks = useCallback(async () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
-      .from('works')
-      .select('*')
-      .eq('is_approved', true) // 只显示已审核通过的作品
-      .order('created_at', { ascending: false })
-
-    if (!error && data) {
-      setWorks(data)
-    }
-  }, [])
-
-  useEffect(() => {
-    loadWorks()
-  }, [loadWorks])
-
+  
   // 使用 useMemo 缓存计算结果
   const popularTags = useMemo(() => {
     const tagCounts: { [key: string]: number } = {}
-    
+
     works.forEach(work => {
       if (work.tags && Array.isArray(work.tags)) {
         work.tags.forEach(tag => {
@@ -143,80 +180,12 @@ export default function HomePage() {
         })
       }
     })
-    
+
     return Object.entries(tagCounts)
       .map(([tag, count]) => ({ tag, count }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10)
   }, [works])
-
-  const filteredWorks = useMemo(() => {
-    let filtered = [...works]
-
-    // 高级搜索过滤
-    if (advancedFilters) {
-      // 关键词
-      if (advancedFilters.keyword) {
-        filtered = filtered.filter(work =>
-          work.title.toLowerCase().includes(advancedFilters.keyword.toLowerCase()) ||
-          work.description?.toLowerCase().includes(advancedFilters.keyword.toLowerCase())
-        )
-      }
-      
-      // 作者
-      if (advancedFilters.author) {
-        filtered = filtered.filter(work =>
-          work.author?.toLowerCase().includes(advancedFilters.author.toLowerCase())
-        )
-      }
-      
-      // 标签
-      if (advancedFilters.tags.length > 0) {
-        filtered = filtered.filter(work =>
-          work.tags && advancedFilters.tags.some(tag => work.tags?.includes(tag))
-        )
-      }
-      
-      // 最少浏览量
-      if (advancedFilters.minViews > 0) {
-        filtered = filtered.filter(work => work.views >= advancedFilters.minViews)
-      }
-      
-      // 最少点赞数
-      if (advancedFilters.minLikes > 0) {
-        filtered = filtered.filter(work => work.likes >= advancedFilters.minLikes)
-      }
-    } else {
-      // 简单搜索过滤
-      if (searchQuery) {
-        filtered = filtered.filter(work =>
-          work.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          work.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          work.author?.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      }
-
-      // 标签过滤
-      if (selectedTag) {
-        filtered = filtered.filter(work =>
-          work.tags && work.tags.includes(selectedTag)
-        )
-      }
-    }
-
-    // 排序
-    switch (sortBy) {
-      case 'views':
-        return filtered.sort((a, b) => b.views - a.views)
-      case 'likes':
-        return filtered.sort((a, b) => b.likes - a.likes)
-      case 'latest':
-      default:
-        return filtered.sort((a, b) => 
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        )
-    }
-  }, [works, searchQuery, selectedTag, sortBy, advancedFilters])
 
   const totalViews = useMemo(() => works.reduce((sum, work) => sum + work.views, 0), [works])
   const totalLikes = useMemo(() => works.reduce((sum, work) => sum + work.likes, 0), [works])
@@ -267,7 +236,9 @@ export default function HomePage() {
             GEMINI 3.0
           </div>
           <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-emerald-100 mb-8 font-serif tracking-wide hero-subtitle px-4 break-words">
-            {subtitleTyping || SUBTITLE_TEXTS[subtitleIndex]}
+            <span suppressHydrationWarning>
+              {subtitleTyping || SUBTITLE_TEXTS[subtitleIndex]}
+            </span>
             <span className="typewriter-caret" aria-hidden="true"></span>
           </p>
           <p className="text-sm md:text-base text-slate-100/95 mb-8 md:mb-12 max-w-2xl mx-auto leading-relaxed font-serif hero-description px-4">
@@ -302,7 +273,7 @@ export default function HomePage() {
       </div>
 
       {/* 排序和筛选条件显示 */}
-      {(selectedTag || searchQuery) && (
+      {(selectedTag || searchQuery || advancedFilters) && (
         <div className="mb-8 bg-white/15 dark:bg-gray-800/40 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-2 border-white/50 dark:border-gray-600/50 rounded-xl p-4 shadow-lg">
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-sm font-medium text-blue-900 dark:text-blue-300">当前筛选：</span>
@@ -328,8 +299,18 @@ export default function HomePage() {
                 </button>
               </Badge>
             )}
+            {advancedFilters?.keyword && (
+              <Badge className="gap-2 bg-purple-600">
+                关键词: &quot;{advancedFilters.keyword}&quot;
+              </Badge>
+            )}
+            {advancedFilters?.author && (
+              <Badge className="gap-2 bg-indigo-600">
+                作者: {advancedFilters.author}
+              </Badge>
+            )}
             <span className="text-sm text-blue-700 ml-auto">
-              找到 {filteredWorks.length} 个作品
+              {totalCount > 0 ? `显示 ${works.length} / ${totalCount}` : '搜索中...'}
             </span>
           </div>
         </div>
@@ -449,9 +430,16 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 作品网格 */}
+      {/* 无限滚动作品网格 */}
       <div className="mb-12">
-        <WorkGrid works={filteredWorks} />
+        <InfiniteWorkGrid
+          works={works}
+          loading={loading}
+          hasMore={hasMore}
+          error={error}
+          onLoadMore={loadMore}
+          totalCount={totalCount}
+        />
       </div>
 
       {/* 数据统计图表 - 放在作品列表之后 */}
@@ -461,29 +449,8 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* 空状态 - 诗意设计 */}
-      {filteredWorks.length === 0 && works.length > 0 && (
-        <div className="text-center py-12 md:py-20 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 mx-4">
-          <div className="text-5xl md:text-6xl mb-4 md:mb-6">🌸</div>
-          <p className="text-2xl md:text-3xl text-gray-900 dark:text-gray-100 mb-2 md:mb-3 font-calligraphy px-4">
-            未觅芳踪
-          </p>
-          <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mb-6 md:mb-8 font-serif px-4">
-            暂无匹配的作品，试试其他筛选条件
-          </p>
-          <Button
-            onClick={() => {
-              setSearchQuery('')
-              setSelectedTag(null)
-            }}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-serif shadow-md hover:shadow-lg transition-all duration-300 text-sm md:text-base"
-          >
-            清除筛选
-          </Button>
-        </div>
-      )}
-
-      {works.length === 0 && (
+      {/* 空状态 - 仅在没有搜索条件时显示 */}
+      {works.length === 0 && !searchQuery && !selectedTag && !advancedFilters && (
         <div className="text-center py-16 md:py-24 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl rounded-2xl md:rounded-3xl shadow-lg border border-gray-200 dark:border-gray-700 mx-4">
           <Sparkles className="h-16 w-16 md:h-24 md:w-24 mx-auto mb-6 md:mb-8 text-blue-600 dark:text-blue-400" />
           <p className="text-3xl md:text-4xl text-gray-900 dark:text-gray-100 mb-3 md:mb-4 font-calligraphy px-4">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 import {
   BarChart,
   Bar,
@@ -24,7 +24,7 @@ interface StatsDashboardProps {
 
 const COLORS = ['#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316']
 
-export function StatsDashboard({ works }: StatsDashboardProps) {
+export const StatsDashboard = memo(function StatsDashboard({ works }: StatsDashboardProps) {
   // 标签分布统计
   const tagStats = useMemo(() => {
     const tagCounts: { [key: string]: number } = {}
@@ -206,5 +206,5 @@ export function StatsDashboard({ works }: StatsDashboardProps) {
       </div>
     </div>
   )
-}
+})
 
