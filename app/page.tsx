@@ -45,6 +45,12 @@ export default function HomePage() {
   const [authError, setAuthError] = useState<string | null>(null)
   const [advancedFilters, setAdvancedFilters] = useState<SearchFilters | null>(null)
 
+  // 分页状态
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const PAGE_SIZE = 12
+
   // 首页背景轮播：几张公路 / 阳光风景之间自动切换
   useEffect(() => {
     if (HERO_BG_CLASSES.length <= 1) return
@@ -115,22 +121,52 @@ export default function HomePage() {
     }
   }, [])
 
-  const loadWorks = useCallback(async () => {
+  const loadWorks = useCallback(async (pageNum: number, append = false) => {
+    if (loading) return
+    setLoading(true)
+
+    const from = (pageNum - 1) * PAGE_SIZE
+    const to = from + PAGE_SIZE - 1
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any)
+    const { data, error, count } = await (supabase as any)
       .from('works')
-      .select('*')
-      .eq('is_approved', true) // 只显示已审核通过的作品
+      .select('id, title, description, thumbnail, source_code_url, tags, author, views, likes, created_at, url', { count: 'exact' })
+      .eq('is_approved', true)
       .order('created_at', { ascending: false })
+      .range(from, to)
 
     if (!error && data) {
-      setWorks(data)
+      setWorks(prev => append ? [...prev, ...data] : data)
+      setHasMore(data.length === PAGE_SIZE)
     }
-  }, [])
+    setLoading(false)
+  }, [loading, PAGE_SIZE])
 
   useEffect(() => {
-    loadWorks()
-  }, [loadWorks])
+    loadWorks(1, false)
+  }, [])
+
+  // 无限滚动
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollHeight = document.documentElement.scrollHeight
+      const scrollTop = document.documentElement.scrollTop
+      const clientHeight = document.documentElement.clientHeight
+
+      // 距离底部 1000px 时开始加载
+      if (scrollHeight - scrollTop - clientHeight < 1000) {
+        if (hasMore && !loading) {
+          const nextPage = page + 1
+          setPage(nextPage)
+          loadWorks(nextPage, true)
+        }
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [hasMore, loading, page, loadWorks])
 
   // 使用 useMemo 缓存计算结果
   const popularTags = useMemo(() => {
@@ -452,6 +488,23 @@ export default function HomePage() {
       {/* 作品网格 */}
       <div className="mb-12">
         <WorkGrid works={filteredWorks} />
+
+        {/* 加载更多指示器 */}
+        {loading && (
+          <div className="text-center py-8">
+            <div className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400">
+              <div className="w-5 h-5 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+              <span className="text-sm font-serif">加载中...</span>
+            </div>
+          </div>
+        )}
+
+        {/* 已全部加载提示 */}
+        {!hasMore && works.length > 0 && (
+          <div className="text-center py-6 text-gray-500 dark:text-gray-400 text-sm font-serif">
+            已加载全部作品
+          </div>
+        )}
       </div>
 
       {/* 数据统计图表 - 放在作品列表之后 */}

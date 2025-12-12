@@ -5,25 +5,59 @@ import { Badge } from '@/components/ui/badge'
 import { Eye, Heart } from 'lucide-react'
 import { Work } from '@/types/database'
 import { formatNumber, formatDate } from '@/lib/utils'
-import { memo } from 'react'
+import { memo, useState, useEffect, useRef } from 'react'
 
 interface WorkCardProps {
   work: Work
 }
 
 export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
+  const [isInView, setIsInView] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  // Intersection Observer 懒加载
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true)
+            // 一旦进入视口就停止观察
+            if (cardRef.current) {
+              observer.unobserve(cardRef.current)
+            }
+          }
+        })
+      },
+      {
+        rootMargin: '100px', // 提前 100px 开始加载
+        threshold: 0.1,
+      }
+    )
+
+    if (cardRef.current) {
+      observer.observe(cardRef.current)
+    }
+
+    return () => {
+      if (cardRef.current) {
+        observer.unobserve(cardRef.current)
+      }
+    }
+  }, [])
+
   // 兼容旧格式：[CODE-HTML]-data:... 和新格式：data:...
-  const cleanSourceUrl = work.source_code_url && work.source_code_url.includes('[CODE-') 
+  const cleanSourceUrl = work.source_code_url && work.source_code_url.includes('[CODE-')
     ? work.source_code_url.substring(work.source_code_url.indexOf('data:'))
     : work.source_code_url
-  
+
   // 检查是否有 HTML/SVG data URL 可以预览
   const hasCodePreview = cleanSourceUrl && cleanSourceUrl.startsWith('data:')
   const isHtmlCode = hasCodePreview && cleanSourceUrl.includes('data:text/html')
-  
-  // 安全解码 HTML 内容
+
+  // 安全解码 HTML 内容（只在需要时解码）
   const getHtmlContent = () => {
-    if (!isHtmlCode || !cleanSourceUrl) return ''
+    if (!isHtmlCode || !cleanSourceUrl || !isInView) return ''
     try {
       const base64Data = cleanSourceUrl.split(',')[1]
       return decodeURIComponent(escape(atob(base64Data)))
@@ -37,7 +71,7 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
 
   return (
     <Link href={`/works/${work.id}`}>
-      <Card className="glass-card group overflow-hidden relative transform-gpu bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800">
+      <Card ref={cardRef} className="glass-card group overflow-hidden relative transform-gpu bg-white/90 dark:bg-gray-800/90 hover:bg-white dark:hover:bg-gray-800">
         <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-blue-50 to-gray-50 dark:from-gray-800 dark:to-gray-700 group-hover:from-blue-100 group-hover:to-gray-100 dark:group-hover:from-gray-700 dark:group-hover:to-gray-600 transition-all duration-300">
           {/* 装饰性渐变层 */}
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/5 to-transparent"></div>
@@ -52,20 +86,24 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
               placeholder="blur"
               blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCI+PHJlY3Qgd2lkdGg9IjQwMCIgaGVpZ2h0PSI0MDAiIGZpbGw9IiNlNWU3ZWIiLz48L3N2Zz4="
             />
-          ) : htmlContent ? (
+          ) : isInView && htmlContent ? (
             <iframe
               srcDoc={htmlContent}
               className="w-full h-full pointer-events-none"
               sandbox="allow-scripts"
               title={work.title}
             />
-          ) : work.url ? (
+          ) : isInView && work.url ? (
             <iframe
               src={work.url}
               className="w-full h-full pointer-events-none"
               sandbox="allow-scripts allow-same-origin"
               title={work.title}
             />
+          ) : !isInView ? (
+            <div className="flex h-full items-center justify-center bg-gray-100 dark:bg-gray-800">
+              <div className="w-8 h-8 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+            </div>
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
               暂无预览

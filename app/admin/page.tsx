@@ -36,34 +36,53 @@ export default function AdminPage() {
   const [isAdmin, setIsAdmin] = useState(false)
   const [works, setWorks] = useState<Work[]>([])
   const [loading, setLoading] = useState(true)
+  const [page, setPage] = useState(1)
+  const [hasMore, setHasMore] = useState(true)
+  const [total, setTotal] = useState(0)
+  const PAGE_SIZE = 20
 
   useEffect(() => {
     // 检查管理员权限
     const adminStatus = checkAdminStatus()
     setIsAdmin(adminStatus)
-    
+
     if (adminStatus) {
-      loadWorks()
+      loadWorks(1, false)
     } else {
       setLoading(false)
     }
   }, [])
 
-  const loadWorks = async () => {
+  const loadWorks = async (pageNum: number, append = false) => {
+    if (loading && append) return
+
+    setLoading(true)
     try {
-      const { data, error } = await supabase
+      const from = (pageNum - 1) * PAGE_SIZE
+      const to = from + PAGE_SIZE - 1
+
+      const { data, error, count } = await supabase
         .from('works')
-        .select('*')
+        .select('id, title, description, thumbnail, source_code_url, tags, author, uploaded_by, is_approved, views, likes, created_at, url', { count: 'exact' })
         .order('created_at', { ascending: false })
+        .range(from, to)
 
       if (!error && data) {
-        setWorks(data)
+        setWorks(prev => append ? [...prev, ...data] : data)
+        setHasMore(data.length === PAGE_SIZE)
+        setTotal(count || 0)
       }
     } catch (error) {
       console.error('加载作品失败:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadMore = () => {
+    const nextPage = page + 1
+    setPage(nextPage)
+    loadWorks(nextPage, true)
   }
 
   const handleDelete = async (workId: string, title: string) => {
@@ -362,6 +381,33 @@ export default function AdminPage() {
               )})
             )}
           </div>
+
+          {/* 加载更多按钮 */}
+          {hasMore && works.length > 0 && (
+            <div className="mt-8 flex justify-center">
+              <Button
+                variant="outline"
+                onClick={loadMore}
+                disabled={loading}
+                size="lg"
+              >
+                {loading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mr-2"></div>
+                    加载中...
+                  </>
+                ) : (
+                  `加载更多 (${works.length}/${total})`
+                )}
+              </Button>
+            </div>
+          )}
+
+          {!hasMore && works.length > 0 && (
+            <div className="mt-6 text-center text-gray-500 dark:text-gray-400 text-sm">
+              已加载全部 {total} 个作品
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

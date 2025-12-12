@@ -38,19 +38,20 @@ async function getWork(id: string): Promise<Work | null> {
   return work
 }
 
-async function getComments(workId: string) {
-  const { data, error } = await supabase
+async function getComments(workId: string, limit = 5) {
+  const { data, error, count } = await supabase
     .from('comments')
-    .select('*')
+    .select('*', { count: 'exact' })
     .eq('work_id', workId)
     .order('created_at', { ascending: false })
+    .range(0, limit - 1)
 
   if (error) {
     console.error('获取评论失败:', error)
-    return []
+    return { comments: [], total: 0 }
   }
 
-  return data
+  return { comments: data, total: count || 0 }
 }
 
 export default async function WorkDetailPage({
@@ -64,7 +65,7 @@ export default async function WorkDetailPage({
     notFound()
   }
 
-  const comments = await getComments(params.id)
+  const { comments, total } = await getComments(params.id)
 
   return (
     <div className="container py-8 max-w-5xl">
@@ -146,7 +147,7 @@ export default async function WorkDetailPage({
 
       {/* 评论区 */}
       <div className="border-t pt-8">
-        <CommentSection workId={work.id} comments={comments} />
+        <CommentSection workId={work.id} comments={comments} total={total} />
       </div>
     </div>
   )
