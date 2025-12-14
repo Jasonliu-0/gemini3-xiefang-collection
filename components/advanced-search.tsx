@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Search, X, Filter } from 'lucide-react'
+import { Search, X, Filter } from '@/lib/icons'
 
 interface AdvancedSearchProps {
   onSearch: (filters: SearchFilters) => void

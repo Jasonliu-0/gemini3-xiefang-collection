@@ -63,3 +63,7 @@ pids
 *.pid.lock
 .spec-workflow
 推广.md
+.playwright-mcp
+.claude
+docs
+nul

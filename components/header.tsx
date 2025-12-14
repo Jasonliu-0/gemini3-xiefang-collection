@@ -19,7 +19,7 @@ export function Header() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/40 dark:bg-gray-900/40 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-b border-white/30 dark:border-gray-700/30 shadow-lg transition-colors">
+    <header className="sticky top-0 z-50 w-full bg-white/60 dark:bg-gray-900/60 backdrop-filter backdrop-blur-xl border-b border-white/30 dark:border-gray-700/30 shadow-lg transition-colors">
       <div className="container flex h-16 items-center justify-between px-4">
         <Link href="/" className="flex items-center space-x-2 md:space-x-3 group flex-shrink-0">
           <Sparkles className="h-5 w-5 md:h-7 md:w-7 text-sky-500 dark:text-sky-400" />

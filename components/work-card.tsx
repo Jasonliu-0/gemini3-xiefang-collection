@@ -2,7 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Eye, Heart } from 'lucide-react'
+import { Eye, Heart } from '@/lib/icons'
 import { Work } from '@/types/database'
 import { formatNumber, formatDate } from '@/lib/utils'
 import { memo, useState, useEffect, useRef } from 'react'
@@ -35,13 +35,14 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
       }
     )
 
-    if (cardRef.current) {
-      observer.observe(cardRef.current)
+    const currentRef = cardRef.current
+    if (currentRef) {
+      observer.observe(currentRef)
     }
 
     return () => {
-      if (cardRef.current) {
-        observer.unobserve(cardRef.current)
+      if (currentRef) {
+        observer.unobserve(currentRef)
       }
     }
   }, [])
@@ -110,7 +111,7 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
             </div>
           )}
         </div>
-        <CardContent className="relative z-20 p-4 md:p-6 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl">
+        <CardContent className="relative z-20 p-4 md:p-6 bg-white/90 dark:bg-gray-800/90">
           <h3 className="font-bold text-lg md:text-xl line-clamp-2 mb-2 md:mb-3 text-gray-900 dark:text-gray-100 group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-all duration-300 font-serif">
             {work.title}
           </h3>
@@ -137,7 +138,7 @@ export const WorkCard = memo(function WorkCard({ work }: WorkCardProps) {
             </div>
           )}
         </CardContent>
-        <CardFooter className="relative z-20 px-4 md:px-6 pb-4 md:pb-6 pt-3 md:pt-4 flex flex-col gap-2 text-xs md:text-sm bg-gradient-to-b from-white/10 to-white/20 backdrop-blur-xl border-t border-white/30">
+        <CardFooter className="relative z-20 px-4 md:px-6 pb-4 md:pb-6 pt-3 md:pt-4 flex flex-col gap-2 text-xs md:text-sm bg-gray-50/90 dark:bg-gray-800/90 border-t border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between w-full font-serif">
             <div className="flex items-center gap-3 md:gap-4">
               <span className="flex items-center gap-1 md:gap-1.5 text-blue-600 dark:text-blue-400">

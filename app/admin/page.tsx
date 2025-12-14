@@ -51,7 +51,8 @@ export default function AdminPage() {
     } else {
       setLoading(false)
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // 只在组件挂载时加载一次
 
   const loadWorks = async (pageNum: number, append = false) => {
     if (loading && append) return

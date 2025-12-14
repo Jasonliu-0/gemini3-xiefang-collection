@@ -1,15 +1,46 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import dynamic from 'next/dynamic'
 import { supabase } from '@/lib/supabase'
 import { WorkGrid } from '@/components/work-grid'
-import { StatsDashboard } from '@/components/stats-dashboard'
-import { AdvancedSearch, SearchFilters } from '@/components/advanced-search'
+import { SearchFilters } from '@/components/advanced-search'
+import { throttle } from '@/lib/performance'
+
+// 动态导入统计图表，减少首屏 JS 体积
+const StatsDashboard = dynamic(
+  () => import('@/components/stats-dashboard').then(mod => ({ default: mod.StatsDashboard })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="text-center py-8">
+        <div className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400">
+          <div className="w-5 h-5 border-2 border-blue-600 dark:border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm font-serif">加载统计数据...</span>
+        </div>
+      </div>
+    )
+  }
+)
+
+// 动态导入高级搜索，减少首屏 JS 体积
+const AdvancedSearch = dynamic(
+  () => import('@/components/advanced-search').then(mod => ({ default: mod.AdvancedSearch })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="mb-6">
+        <div className="h-10 w-28 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+      </div>
+    )
+  }
+)
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { Search, TrendingUp, Eye, Heart, Sparkles, Upload } from 'lucide-react'
+// 使用集中管理的图标导入
+import { Search, TrendingUp, Eye, Heart, Sparkles, Upload } from '@/lib/icons'
 import { Work } from '@/types/database'
 
 const HERO_BG_CLASSES = [
@@ -25,6 +56,22 @@ const HERO_BG_CLASSES = [
   'home-hero-bg-9',
   'home-hero-bg-10',
   'home-hero-bg-11',
+]
+
+// 背景图片 URL 列表（与 CSS 同步，用于预加载）
+const HERO_BG_URLS = [
+  'https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
+  'https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70',
 ]
 
 const SUBTITLE_TEXTS = [
@@ -45,6 +92,10 @@ export default function HomePage() {
   const [authError, setAuthError] = useState<string | null>(null)
   const [advancedFilters, setAdvancedFilters] = useState<SearchFilters | null>(null)
 
+  // 🚀 懒加载状态：只在滚动到统计区域时才加载 Recharts
+  const [shouldLoadStats, setShouldLoadStats] = useState(false)
+  const statsContainerRef = useRef<HTMLDivElement>(null)
+
   // 分页状态
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
@@ -52,11 +103,28 @@ export default function HomePage() {
   const PAGE_SIZE = 12
 
   // 首页背景轮播：几张公路 / 阳光风景之间自动切换
+  // 优化：预加载下一张图片，避免切换时白屏
   useEffect(() => {
     if (HERO_BG_CLASSES.length <= 1) return
 
+    // 预加载下一张背景图片
+    const preloadNextImage = (currentIndex: number) => {
+      const nextIndex = (currentIndex + 1) % HERO_BG_URLS.length
+      const img = new Image()
+      img.src = HERO_BG_URLS[nextIndex]
+    }
+
+    // 初始预加载第一张和第二张
+    preloadNextImage(-1) // 预加载第一张
+    preloadNextImage(0)  // 预加载第二张
+
     const interval = setInterval(() => {
-      setBgIndex((prev) => (prev + 1) % HERO_BG_CLASSES.length)
+      setBgIndex((prev) => {
+        const next = (prev + 1) % HERO_BG_CLASSES.length
+        // 预加载下下张图片
+        preloadNextImage(next)
+        return next
+      })
     }, 12000) // 每 12 秒切换一张
 
     return () => clearInterval(interval)
@@ -121,15 +189,74 @@ export default function HomePage() {
     }
   }, [])
 
+  // 🚀 Intersection Observer：只在统计区域可见时才加载 Recharts
+  useEffect(() => {
+    // 如果已经加载过，不再监听
+    if (shouldLoadStats) return
+
+    // 如果没有 ref，等待下次渲染
+    if (!statsContainerRef.current) return
+
+    // 首先检查元素是否已经在视口内
+    const checkInitialVisibility = () => {
+      const element = statsContainerRef.current
+      if (!element) return false
+
+      const rect = element.getBoundingClientRect()
+      const isVisible = (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) + 300 &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      )
+
+      return isVisible
+    }
+
+    // 如果元素已经可见，立即加载
+    if (checkInitialVisibility()) {
+      setShouldLoadStats(true)
+      return
+    }
+
+    // 否则使用 Intersection Observer
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // 当统计区域进入视口时，触发加载
+        if (entry.isIntersecting) {
+          setShouldLoadStats(true)
+          observer.disconnect() // 加载后断开监听
+        }
+      },
+      {
+        // 提前 300px 开始加载，确保用户滚动到时已经准备好
+        rootMargin: '300px 0px',
+        threshold: 0.01,
+      }
+    )
+
+    if (statsContainerRef.current) {
+      observer.observe(statsContainerRef.current)
+    }
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [shouldLoadStats, works.length]) // 添加 works.length 作为依赖
+
+  // 使用 ref 跟踪 loading 状态，避免依赖循环
+  const loadingRef = useRef(false)
+
   const loadWorks = useCallback(async (pageNum: number, append = false) => {
-    if (loading) return
+    if (loadingRef.current) return
+    loadingRef.current = true
     setLoading(true)
 
     const from = (pageNum - 1) * PAGE_SIZE
     const to = from + PAGE_SIZE - 1
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error, count } = await (supabase as any)
+    const { data, error } = await (supabase as any)
       .from('works')
       .select('id, title, description, thumbnail, source_code_url, tags, author, views, likes, created_at, url', { count: 'exact' })
       .eq('is_approved', true)
@@ -140,33 +267,35 @@ export default function HomePage() {
       setWorks(prev => append ? [...prev, ...data] : data)
       setHasMore(data.length === PAGE_SIZE)
     }
+    loadingRef.current = false
     setLoading(false)
-  }, [loading, PAGE_SIZE])
+  }, [])
 
   useEffect(() => {
     loadWorks(1, false)
-  }, [])
+  }, [loadWorks])
 
-  // 无限滚动
+  // 无限滚动 - 使用节流优化性能
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       const scrollHeight = document.documentElement.scrollHeight
       const scrollTop = document.documentElement.scrollTop
       const clientHeight = document.documentElement.clientHeight
 
-      // 距离底部 1000px 时开始加载
+      // 🚀 优化：距离底部 1000px 时开始加载（在滚动到统计区域时就开始预加载）
+      // 这样用户在查看作品时，下一批内容就已经准备好了
       if (scrollHeight - scrollTop - clientHeight < 1000) {
-        if (hasMore && !loading) {
+        if (hasMore && !loadingRef.current) {
           const nextPage = page + 1
           setPage(nextPage)
           loadWorks(nextPage, true)
         }
       }
-    }
+    }, 200) // 200ms 节流，降低执行频率
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [hasMore, loading, page, loadWorks])
+  }, [hasMore, page, loadWorks])
 
   // 使用 useMemo 缓存计算结果
   const popularTags = useMemo(() => {
@@ -507,10 +636,30 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* 数据统计图表 - 放在作品列表之后 */}
+      {/* 数据统计图表 - 放在作品列表之后，懒加载优化 */}
       {works.length > 0 && (
-        <div className="px-4">
-          <StatsDashboard works={works} />
+        <div ref={statsContainerRef} className="px-4">
+          {shouldLoadStats ? (
+            <StatsDashboard works={works} />
+          ) : (
+            <div className="text-center py-12 bg-white/80 dark:bg-gray-800/80 backdrop-filter backdrop-blur-xl rounded-2xl shadow-md border border-gray-200 dark:border-gray-700">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-3">
+                  <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400 animate-pulse" />
+                  <span className="text-base text-gray-600 dark:text-gray-400 font-serif">
+                    统计图表准备中...
+                  </span>
+                </div>
+                {/* 手动加载按钮 */}
+                <button
+                  onClick={() => setShouldLoadStats(true)}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-sm font-serif shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  立即加载统计图表
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -7,7 +7,7 @@ import { CommentSection } from '@/components/comment-section'
 import { SourceCodeViewer } from '@/components/source-code-viewer'
 import { LikeButton } from '@/components/like-button'
 import { FavoriteButton } from '@/components/favorite-button'
-import { Eye, Heart, Calendar, User } from 'lucide-react'
+import { Eye, Heart, Calendar, User } from '@/lib/icons'
 import { formatDate, formatNumber } from '@/lib/utils'
 import { Work } from '@/types/database'
 

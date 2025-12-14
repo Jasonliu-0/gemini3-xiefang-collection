@@ -177,46 +177,40 @@
   background-size: 1000px 100%;
 }
 
-/* 超强毛玻璃效果 */
+/* 超强毛玻璃效果 - 性能优化版 */
 .glass {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(40px) saturate(200%) brightness(110%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(110%);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
   border: 2px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 
-    0 8px 32px 0 rgba(56, 189, 248, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset,
-    0 1px 0 0 rgba(255, 255, 255, 0.9) inset;
+  box-shadow:
+    0 8px 32px 0 rgba(56, 189, 248, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
 }
 
 .glass:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.3);
   border-color: rgba(45, 212, 191, 0.5);
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 
-    0 16px 48px 0 rgba(56, 189, 248, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.6) inset,
-    0 1px 0 0 rgba(255, 255, 255, 1) inset;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 48px 0 rgba(56, 189, 248, 0.2),
+    0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+  transition: all 0.3s ease;
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(50px) saturate(200%) brightness(115%);
-  -webkit-backdrop-filter: blur(50px) saturate(200%) brightness(115%);
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   border: 2px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 
-    0 12px 40px 0 rgba(56, 189, 248, 0.15),
-    0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+  box-shadow: 0 12px 40px 0 rgba(56, 189, 248, 0.1);
 }
 
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateY(-8px);
-  box-shadow: 
-    0 20px 60px 0 rgba(56, 189, 248, 0.25),
-    0 0 0 2px rgba(45, 212, 191, 0.3) inset;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px 0 rgba(56, 189, 248, 0.15);
+  transition: all 0.3s ease;
 }
 
 /* 渐变文字 */
@@ -275,7 +269,7 @@
   transition: background-image 1s ease-in-out;
 }
 
-/* 多张公路 / 阳光背景，用于轮播 */
+/* 多张公路 / 阳光背景，用于轮播 - 优化: 1280px + 压缩质量 */
 .home-hero-bg-0 {
   background-image:
     linear-gradient(
@@ -284,7 +278,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/620337/pexels-photo-620337.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-1 {
@@ -295,7 +289,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-2 {
@@ -306,7 +300,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/547115/pexels-photo-547115.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-3 {
@@ -317,7 +311,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34718317/pexels-photo-34718317.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-4 {
@@ -328,7 +322,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34719769/pexels-photo-34719769.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-5 {
@@ -339,7 +333,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34721075/pexels-photo-34721075.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-6 {
@@ -350,7 +344,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34720408/pexels-photo-34720408.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-7 {
@@ -361,7 +355,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34718430/pexels-photo-34718430.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-8 {
@@ -372,7 +366,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34717827/pexels-photo-34717827.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-9 {
@@ -383,7 +377,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34717831/pexels-photo-34717831.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-10 {
@@ -394,7 +388,7 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34725770/pexels-photo-34725770.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-bg-11 {
@@ -405,16 +399,16 @@
       rgba(15, 23, 42, 0.2),
       rgba(248, 250, 252, 0.18)
     ),
-    url('https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=1920');
+    url('https://images.pexels.com/photos/34699761/pexels-photo-34699761.jpeg?auto=compress&cs=tinysrgb&w=1280&q=70');
 }
 
 .home-hero-shell {
   border-radius: 1.75rem;
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(30px) saturate(180%);
-  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
   box-shadow:
-    0 24px 60px rgba(15, 23, 42, 0.25),
+    0 24px 60px rgba(15, 23, 42, 0.2),
     0 0 0 1px rgba(255, 255, 255, 0.8) inset;
   border: 1px solid rgba(255, 255, 255, 0.85);
 }
