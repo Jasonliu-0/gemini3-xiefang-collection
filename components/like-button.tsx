@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Heart } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useLocalStorage } from '@/lib/useLocalStorage'
 
 interface LikeButtonProps {
   workId: string
@@ -15,11 +16,13 @@ export function LikeButton({ workId, initialLikes }: LikeButtonProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
 
+  // 使用 hook 缓存 likedWorks，避免每次都读取 localStorage
+  const [likedWorks, setLikedWorks] = useLocalStorage<string[]>('likedWorks', [])
+
   useEffect(() => {
-    // 检查是否已点赞
-    const likedWorks = JSON.parse(localStorage.getItem('likedWorks') || '[]')
+    // 检查是否已点赞（使用缓存的数据）
     setIsLiked(likedWorks.includes(workId))
-  }, [workId])
+  }, [workId, likedWorks])
 
   const handleLike = async () => {
     if (isLiked) {
@@ -45,10 +48,8 @@ export function LikeButton({ workId, initialLikes }: LikeButtonProps) {
       setLikes(likes + 1)
       setIsLiked(true)
 
-      // 保存到 localStorage
-      const likedWorks = JSON.parse(localStorage.getItem('likedWorks') || '[]')
-      likedWorks.push(workId)
-      localStorage.setItem('likedWorks', JSON.stringify(likedWorks))
+      // 保存到 localStorage（通过 hook 自动更新）
+      setLikedWorks([...likedWorks, workId])
     } catch (error) {
       console.error('点赞失败:', error)
       alert('点赞失败，请重试')

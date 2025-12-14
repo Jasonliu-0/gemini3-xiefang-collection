@@ -16,7 +16,7 @@ import {
 } from 'recharts'
 import { Work } from '@/types/database'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { TrendingUp, PieChart as PieChartIcon, BarChart3 } from 'lucide-react'
+import { TrendingUp, PieChart as PieChartIcon, BarChart3 } from '@/lib/icons'
 
 interface StatsDashboardProps {
   works: Work[]

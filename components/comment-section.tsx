@@ -17,15 +17,15 @@ const EMOJI_PICKER = ['😀', '😂', '🥰', '👍', '🎉', '✨', '🔥', '�
 interface CommentSectionProps {
   workId: string
   comments: Comment[]
+  total: number
 }
 
 const PAGE_SIZE = 5
 
-export function CommentSection({ workId, comments: initialComments }: CommentSectionProps) {
+export function CommentSection({ workId, comments: initialComments, total: initialTotal }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>(initialComments)
-  const [visibleCount, setVisibleCount] = useState(() =>
-    Math.min(PAGE_SIZE, initialComments.length)
-  )
+  const [total, setTotal] = useState(initialTotal)
+  const [loading, setLoading] = useState(false)
   const [userName, setUserName] = useState('')
   const [content, setContent] = useState('')
   const [rating, setRating] = useState(5)
@@ -97,7 +97,7 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!userName.trim() || !content.trim()) {
       alert('请填写完整信息')
       return
@@ -120,7 +120,7 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
           finalUserName = `${userName}|${metaParts.join('|')}`
         }
       }
-      
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data, error } = await (supabase as any)
         .from('comments')
@@ -136,7 +136,7 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
       if (error) throw error
 
       setComments((prev) => [data, ...prev])
-      setVisibleCount((prev) => prev + 1)
+      setTotal((prev) => prev + 1)
       // 只在访客模式下清空昵称
       if (!currentUser) {
         setUserName('')
@@ -149,6 +149,31 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
       alert('评论失败，请重试')
     } finally {
       setIsSubmitting(false)
+    }
+  }
+
+  const loadMoreComments = async () => {
+    if (loading || comments.length >= total) return
+
+    setLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('work_id', workId)
+        .order('created_at', { ascending: false })
+        .range(comments.length, comments.length + PAGE_SIZE - 1)
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        setComments((prev) => [...prev, ...data])
+      }
+    } catch (error) {
+      console.error('加载评论失败:', error)
+      alert('加载评论失败，请重试')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -252,7 +277,7 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
 
       <div>
         <h3 className="text-xl font-semibold mb-4">
-          💬 评论列表 ({comments.length})
+          💬 评论列表 ({total})
         </h3>
         <div className="space-y-4">
           {comments.length === 0 ? (
@@ -265,7 +290,7 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
               </p>
             </div>
           ) : (
-            comments.slice(0, visibleCount).map((comment) => {
+            comments.map((comment) => {
               // 从评论中的 user_name 提取头像 / 登录来源等元信息
               const raw = comment.user_name || ''
               const [rawName, ...metaParts] = raw.split('|')
@@ -336,15 +361,21 @@ export function CommentSection({ workId, comments: initialComments }: CommentSec
           )}
         </div>
 
-        {comments.length > visibleCount && (
+        {comments.length < total && (
           <div className="mt-4 flex justify-center">
             <Button
               variant="outline"
-              onClick={() =>
-                setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, comments.length))
-              }
+              onClick={loadMoreComments}
+              disabled={loading}
             >
-              加载更多
+              {loading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                  加载中...
+                </>
+              ) : (
+                `加载更多 (${comments.length}/${total})`
+              )}
             </Button>
           </div>
         )}

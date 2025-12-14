@@ -8,13 +8,17 @@ import { Sparkles } from 'lucide-react'
 import { BackToTopButton } from '@/components/back-to-top'
 import { ThemeProvider } from '@/components/theme-provider'
 
-const inter = Inter({ subsets: ['latin'] })
-const notoSerifSC = Noto_Serif_SC({ 
-  weight: ['400', '600', '700'],
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  preload: true,
+})
+const notoSerifSC = Noto_Serif_SC({
+  weight: ['400', '700'], // 减少字重：从 3 个减到 2 个
   subsets: ['latin'],
   variable: '--font-noto-serif',
   display: 'swap',
-  preload: true,
+  preload: false, // 中文字体不预加载，按需加载
   fallback: ['serif'],
 })
 const maShanZheng = Ma_Shan_Zheng({
@@ -22,7 +26,7 @@ const maShanZheng = Ma_Shan_Zheng({
   subsets: ['latin'],
   variable: '--font-ma-shan',
   display: 'swap',
-  preload: true,
+  preload: false, // 中文字体不预加载，按需加载
   fallback: ['cursive', 'serif'],
 })
 
@@ -53,7 +57,7 @@ export default function RootLayout({
             {children}
           </main>
           <BackToTopButton />
-        <footer className="bg-white/40 dark:bg-gray-900/40 backdrop-filter backdrop-blur-2xl backdrop-saturate-150 border-t border-white/40 dark:border-gray-700/40 py-6 md:py-8 mt-8 md:mt-10 shadow-lg transition-colors">
+        <footer className="bg-white/60 dark:bg-gray-900/60 backdrop-filter backdrop-blur-xl border-t border-white/40 dark:border-gray-700/40 py-6 md:py-8 mt-8 md:mt-10 shadow-lg transition-colors">
           <div className="container px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 items-stretch">
               {/* 左侧：创作数据概览（使用客户端组件） */}
